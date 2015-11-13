@@ -1,0 +1,12 @@
+{
+    "name": "ihermell/climbing7",
+    "authors": [
+        {
+            "name": "Stephane Hermellin",
+            "email": "arcodep@gmail.com"
+        }
+    ],
+    "require": {
+        "lichtner/fluentpdo": "^1.0"
+    }
+}
