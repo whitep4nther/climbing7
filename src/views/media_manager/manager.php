@@ -1,21 +1,11 @@
-<script id="navigatorTemplate" type="text/x-handlebars-template">
-	<ul id="folderList">
-		{{#each folders}}
-			<li>{{this.title}}</li>
-		{{/each}}
-	</ul>
-</script>
+<?= js(['bundle.js']) ?>
 
-<div id="manager">
-	<div id="navigator">
-		
-	</div>
-	<div id="main">
-	</div>
+<div id="root">
 </div>
 
-<script>
-$(document).ready(function () {
-	MediaManager.loadFolders(document.getElementById('navigatorTemplate'), document.getElementById('navigator'));
-});
+<script type="text/javascript">
+ReactDOM.render(
+	React.createElement(Navigator),
+	document.getElementById('root')
+);
 </script>

@@ -10,6 +10,14 @@ class Model {
 	public function __construct($queryBuilder) {
 		$this->queryB = $queryBuilder;
 	}
+
+	public function table() {
+		return $this->table;
+	}
+
+	public function queryB() {
+		return $this->queryB;
+	}
 }
 
 ?>

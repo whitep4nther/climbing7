@@ -11,7 +11,7 @@ $app = new \Core\Slimmy([
  * Application Dependencies
  */
 $app->container->singleton('PDO', function () {
-	return new \PDO("mysql:dbname=climbing7;host=localhost;", "root", "123456");
+	return new \PDO("mysql:dbname=climbing7;host=localhost;", "root", "");
 });
 $app->container->singleton('fPDO', function () use ($app) {
 	return new \FluentPDO($app->PDO);
@@ -26,13 +26,34 @@ function asset($asset) {
 }
 
 function js($asset) {
-	return '<script type="text/javascript" src="'.asset('js/'.$asset).'"></script>';
+	if (!is_array($asset))
+		$asset = [$asset];
+	$str = '';
+	foreach ($asset as $a) {
+		$str .= '<script type="text/javascript" src="'.asset('js/'.$a).'"></script>';
+	}
+	return $str;
+}
+
+function jsx($asset) {
+	if (!is_array($asset))
+		$asset = [$asset];
+	$str = '';
+	foreach ($asset as $a) {
+		$str .= '<script type="text/babel" src="'.asset('jsx/'.$a).'"></script>';
+	}
+	return $str;
 }
 
 function css($asset) {
-	return '<link rel="stylesheet" type="text/css" href="'.asset('css/'.$asset).'"/>';
+	if (!is_array($asset))
+		$asset = [$asset];
+	$str = '';
+	foreach ($asset as $a) {
+		$str .= '<link rel="stylesheet" type="text/css" href="'.asset('css/'.$a).'"/>';
+	}
+	return $str;
 }
-
 
 /**
  * Application Routing
@@ -49,7 +70,17 @@ $app->get('/library', function () use ($app) 	{
 
 $app->get('/library/folders', function () use ($app) 	{
 	$ctrl = new \Controller\MediaFoldersController($app);
-	$ctrl->index();
+	$ctrl->rootDirectories();
+});
+
+$app->get('/library/folder/:id', function ($id) use ($app) 	{
+	$ctrl = new \Controller\MediaFoldersController($app);
+	$ctrl->contentOfFolder($id);
+});
+
+$app->get('/library/create-folder/:id', function ($id) use ($app) 	{
+	$ctrl = new \Controller\MediaFoldersController($app);
+	$ctrl->create($id);
 });
 
 $app->run();
