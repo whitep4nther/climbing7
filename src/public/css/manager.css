@@ -1,0 +1,7 @@
+#navigator {}
+
+
+	#navigator #leftPanel {float:left; background-color: #ADDDED;}
+		#navigator #leftPanel ul {list-style-type: none; padding-left: 0; margin: 0;}
+			#navigator #leftPanel ul li.header {padding: 6px 10px; color: #707070; font-size: 13px; text-transform: uppercase;}
+			#navigator #leftPanel ul li {padding: 8px 20px; font-size: 14px; line-height: 16px;}
