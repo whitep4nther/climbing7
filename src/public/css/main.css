@@ -3,3 +3,5 @@ body {
 }
 
 ul {margin: 0; padding: 0; list-style-type: none;}
+
+.button { display:inline-block; background-color: #11A1D1; color: white; font-size: 14px; padding: 8px 12px;}

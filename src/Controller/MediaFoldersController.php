@@ -23,7 +23,7 @@ class MediaFoldersController extends \Core\Controller {
 	public function contentOfFolder($folderId) {
 		$medias = $this->Media->mediasForFolder($folderId)->fetchAll();
 		$subfolders = $this->MediaFolder->directoriesWithParent($folderId)->fetchAll();
-
+		
 		$this->render('json.php', ['data' => array_merge($medias, $subfolders)]);
 	}
 }

@@ -31,11 +31,17 @@ window.Navigator = React.createClass({displayName: "Navigator",
 
 		return (
 			React.createElement("div", {id: "navigator"}, 
+
 				React.createElement("div", {id: "leftPanel"}, 
 					React.createElement(NavigatorItemList, {data: this.state.navigatorItems, click: this.loadFolder})
 				), 
 				React.createElement("div", {id: "window"}, 
-					React.createElement(NavigatorItemList, {data: this.state.windowItems})
+					React.createElement("div", {id: "windowToolbar"}, 
+						React.createElement("div", {className: "button"}, "Nouveau dossier")
+					), 
+					React.createElement("div", {id: "windowContent"}, 
+						React.createElement(NavigatorItemList, {data: this.state.windowItems})
+					)
 				)
 			)
 		);
@@ -43,10 +49,11 @@ window.Navigator = React.createClass({displayName: "Navigator",
 });
 
 },{"./NavigatorItemList.jsx":3}],2:[function(require,module,exports){
+
 var NavigatorItem = React.createClass({displayName: "NavigatorItem",
 	render: function () {
 		return (
-			React.createElement("li", {onClick: this.props.onClick}, this.props.item.title)
+			React.createElement("div", {className: "navigatorItem", onClick: this.props.onClick}, this.props.item.title)
 		);
 	}
 });
@@ -71,7 +78,7 @@ var NavigatorItemList = React.createClass({displayName: "NavigatorItemList",
 		}.bind(this));
 
 		return (
-			React.createElement("ul", {class: "navigatorList"}, 
+			React.createElement("div", {className: "navigatorList"}, 
 				itemNodes
 			)
 		);
@@ -80,4 +87,4 @@ var NavigatorItemList = React.createClass({displayName: "NavigatorItemList",
 
 module.exports = NavigatorItemList;
 
-},{"./NavigatorItem.jsx":2}]},{},[1]);
+},{"./NavigatorItem.jsx":2}]},{},[1,2,3]);

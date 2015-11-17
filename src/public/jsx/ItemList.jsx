@@ -1,7 +1,5 @@
 
-var NavigatorItem = require('./NavigatorItem.jsx');
-
-var NavigatorItemList = React.createClass({
+var ItemList = React.createClass({
 	getDefaultProps: function() {
 	    return {
 	    	click: function () {}
@@ -9,15 +7,16 @@ var NavigatorItemList = React.createClass({
 	},
 	render: function () {
 		var itemNodes = this.props.data.map(function (item) {
+			var ClassItem = this.props.item;
 			return (
-				<NavigatorItem key={item.id} item={item} onClick={this.props.click.arg(item.id)}/>
+				<ClassItem key={item.id} item={item} click={this.props.click(item)}/>
 			);
 		}.bind(this));
 
 		return (
-			<ul class="navigatorList">
+			<div className="navigatorList">
 				{itemNodes}
-			</ul>
+			</div>
 		);
 	}
 });

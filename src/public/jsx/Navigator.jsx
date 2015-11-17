@@ -30,11 +30,17 @@ window.Navigator = React.createClass({
 
 		return (
 			<div id="navigator">
+
 				<div id="leftPanel">
 					<NavigatorItemList data={this.state.navigatorItems} click={this.loadFolder} />
 				</div>
 				<div id="window">
-					<NavigatorItemList data={this.state.windowItems}/>
+					<div id="windowToolbar">
+						<div className="button">Nouveau dossier</div>
+					</div>
+					<div id="windowContent">
+						<NavigatorItemList data={this.state.windowItems}/>
+					</div>
 				</div>
 			</div>
 		);

@@ -1,7 +1,11 @@
 #navigator {}
 
 
-	#navigator #leftPanel {float:left; background-color: #ADDDED;}
-		#navigator #leftPanel ul {list-style-type: none; padding-left: 0; margin: 0;}
-			#navigator #leftPanel ul li.header {padding: 6px 10px; color: #707070; font-size: 13px; text-transform: uppercase;}
-			#navigator #leftPanel ul li {padding: 8px 20px; font-size: 14px; line-height: 16px;}
+	#navigator #leftPanel {float:left; background-color: #ADDDED; width: 25%; min-width: 200px; max-width: 350px;}
+		#navigator #leftPanel .navigatorList {list-style-type: none; padding-left: 0; margin: 0;}
+			#navigator #leftPanel .navigatorList .navigatorItem.header {padding: 6px 10px; color: #707070; font-size: 13px; text-transform: uppercase;}
+			#navigator #leftPanel .navigatorList .navigatorItem {padding: 8px 20px; font-size: 14px; line-height: 16px;}
+
+	#navigator #window {background-color: #f1f1f1; overflow:hidden; min-height: 100px;}
+		#navigator #window #windowToolbar { border-bottom: 1px solid #63B8D4; margin: 0 10px; padding: 8px 0;}
+		#navigator #window #windowContent .navigatorList .navigatorItem { float:left; height: 60px; width: 80px; border: 1px solid red;}

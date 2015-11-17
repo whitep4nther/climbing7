@@ -11,7 +11,7 @@ class Media extends \Core\Model {
 	public function mediasForFolder($folderId) {
 		return $this->queryB
 			->from($this->table)
-			->where('id', $folderId);
+			->where('folder_id', $folderId);
 	}
 
 }

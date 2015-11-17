@@ -11,7 +11,7 @@ $app = new \Core\Slimmy([
  * Application Dependencies
  */
 $app->container->singleton('PDO', function () {
-	return new \PDO("mysql:dbname=climbing7;host=localhost;", "root", "");
+	return new \PDO("mysql:dbname=climbing7;host=localhost;", "root", "123456");
 });
 $app->container->singleton('fPDO', function () use ($app) {
 	return new \FluentPDO($app->PDO);
