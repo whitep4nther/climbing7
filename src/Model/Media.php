@@ -14,4 +14,53 @@ class Media extends \Core\Model {
 			->where('folder_id', $folderId);
 	}
 
+	public function uploadFilesToFolder($files, $folderId) {
+		$MediaFolder = new \Model\MediaFolder($this->queryB);
+		$folder = $MediaFolder->queryB->from($MediaFolder->table, $folderId)->fetch();
+
+		foreach ($files['name'] as $i => $name) {
+			$infos = pathinfo($name);
+			$slug = \Cake\Utility\Inflector::slug($infos['filename']);
+
+			if (move_uploaded_file($files['tmp_name'][$i], $MediaFolder->libraryPath . $folder['path'] .'/'.$slug.'.'.$infos['extension'])) {
+				$this->queryB
+					->insertInto($this->table, [
+						'title' => $infos['filename'],
+						'folder_id' => $folderId,
+						'filename' => $slug. '.' .$infos['extension'],
+						'full_path' => $folder['path'] .'/'.$slug.'.'.$infos['extension']
+					])->execute();
+			}
+		}
+	}
+
+	public function downloadFilesToFolder($urls, $folderId) {
+		$ids = [];
+
+		foreach ($urls as $url) {
+			if ($id = $this->downloadFileToFolder($url, $folderId)) {
+				$ids[] = $id;
+			}
+		}
+		return $ids;
+	}
+
+	public function downloadFileToFolder($url, $folderId) {
+		$MediaFolder = new \Model\MediaFolder($this->queryB);
+		$folder = $MediaFolder->queryB->from($MediaFolder->table, $folderId)->fetch();
+
+		$infos = pathinfo(parse_url($url)['path']);
+		$slug = \Cake\Utility\Inflector::slug($infos['filename']);
+		if (file_put_contents($MediaFolder->libraryPath . $folder['path'] .'/'.$slug.'.'.$infos['extension'], file_get_contents($url))) {
+		
+			return $this->queryB
+				->insertInto($this->table, [
+					'title' => $infos['filename'],
+					'folder_id' => $folderId,
+					'filename' => $slug. '.' .$infos['extension'],
+					'full_path' => $folder['path'] .'/'.$slug.'.'.$infos['extension']
+				])->execute();
+		}
+	}
+
 }

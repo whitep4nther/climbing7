@@ -1,0 +1,40 @@
+#topPresentation {width:1000px;margin:auto;margin-bottom:0px;padding-bottom:20px;text-align:center;}
+	#topPresentation .titre {text-align:center;margin:10px 0 0 0;font-family:oswaldbook;font-size:32px;}
+	#topPresentation .soustitre {text-align:center;margin:0;font-family:oswaldlight;font-size:20px;color:#777;}
+	
+	#topPresentation .categorie {display:inline;font-family:oswaldlight;font-size:14px;letter-spacing:0.5px;padding:0 2px 0 0;border:1px solid #8c6239;border-radius:2px;}
+
+#iconMenu {list-style-type: none;padding:0px;margin:0;}
+	#iconMenu li {display: inline; }        /*pour IE*/
+	#iconMenu li {display: inline-block;padding:1px;cursor:pointer;margin:0px 4px 14px 0; }
+	#iconMenu li a {text-decoration:none; }
+	#iconMenu img {height:14px;opacity:0.5;}
+	#iconMenu li img:hover {opacity:0.75;}
+
+#presentation {width:1000px;margin:auto;padding:30px 0;}
+	#presentation img {}
+	#presentation section {height:375px;padding:0;overflow:scroll;}
+	#presentation p {margin:0; font-size:14px;color:#4d4d4d;}
+	#presentation .date {margin:0 0 4px 0;font-family:oswaldlight;color:#8c6239;letter-spacing:0.5px;border-bottom:1px solid #ddd;}
+
+
+	
+#caracteristiques {width:340px;float:left;padding:0px 20px 0 0;border-right:1px solid #ddd;margin-bottom:20px;}
+#parcours {width:600px;margin-left:400px;padding:10px 0px;margin-bottom:20px;}
+	#caracteristiques .titre, #parcours .titre {margin:10px 0 0 0;font-family:oswaldbook;font-size:16px;color:#565656;}
+	#caracteristiques, #parcours p {margin:10px 0 0 0;color:#4d4d4d;}
+	.imgTopo {width:340px;height:255px;display:block;margin-top:10px;}
+
+.tag4posts {width:208px;height:250px;float:left;padding:20px;border-left:1px solid #eee;border-right:1px solid #eee;margin-bottom:20px;}
+		.tag4posts .titre {margin:10px 0 0 0;font-family:oswaldbook;font-size:15px;color:#4d4d4d;}
+		.tag4posts .sousTitre {margin:0;font-family:oswaldbook;font-size:12px;color:#777;}
+		.tag4posts .date {margin:10px 0;font-family:oswaldlight;font-size:10px;color:#8c6239;letter-spacing:0.5px;}
+
+.plusDePost p {clear:left;width:130px;margin:auto;color:#8c6239;font-family:oswaldlight;text-align:center;padding:0px;margin-top:40px;border-radius:2px;border:1px solid #8c6239;}
+
+#galerie {width:1000px;margin:auto;padding:0px;margin-bottom:40px;}
+
+#commentaires {width:1000px;margin:auto;height:400px;padding:10px 20px;margin-top:20px;}
+	.laisserCommentaire {width:160px;float:right;background-color:#8c6239;color:white;font-family:oswaldbook;text-align:center;padding:5px;}
+	.laisserCommentaire:hover {background-color:#775431;}
+

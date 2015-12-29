@@ -1,0 +1,10 @@
+/* COLONNE GAUCHE */
+#leftSideBar {width:220px;float:left;margin:0;padding:10px 30px 10px 0;}
+	#leftSideBar .titre {font-family:oswaldbook;font-size:16px;margin:10px 0;}
+	#leftSideBar a {display:block;text-decoration:none;color:#4d4d4d;margin-bottom:2px;font-size:14px;}
+	
+/* CORPS */
+#lastPosts {width:750px;margin-left:250px;}
+	.lastPost1 {width:333px;height:500px;padding:20px;float:left;margin-bottom:40px;border-left:1px solid #eee;border-right:1px solid #eee;}
+	.lastPost {width:208px;height:450px;padding:20px;float:left;margin-bottom:40px;border-left:1px solid #eee;border-right:1px solid #eee;}
+

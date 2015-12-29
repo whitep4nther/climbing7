@@ -6,10 +6,10 @@ var ItemList = React.createClass({
 	    };
 	},
 	render: function () {
-		var itemNodes = this.props.data.map(function (item) {
+		var itemNodes = this.props.data.map(function (data) {
 			var ClassItem = this.props.item;
 			return (
-				<ClassItem key={item.id} item={item} click={this.props.click(item)}/>
+				<ClassItem key={data.id} data={data} {...this.props.pass}/>
 			);
 		}.bind(this));
 
@@ -21,4 +21,4 @@ var ItemList = React.createClass({
 	}
 });
 
-module.exports = NavigatorItemList;
+module.exports = ItemList;

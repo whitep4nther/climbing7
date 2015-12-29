@@ -18,6 +18,10 @@ class Model {
 	public function queryB() {
 		return $this->queryB;
 	}
+
+	public function q() {
+		return $this->queryB->from($this->table);
+	}
 }
 
 ?>

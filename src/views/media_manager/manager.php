@@ -1,4 +1,4 @@
-<?= js(['bundle.js']) ?>
+<?= js(['Api.js', 'bundle.js']) ?>
 
 <div id="root">
 </div>

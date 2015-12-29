@@ -20,6 +20,10 @@ $app->container->singleton('fPDO', function () use ($app) {
 /**
  * Application Helpers
  */
+function library($path) {
+	return asset('library'.$path);
+}
+
 function asset($asset) {
 	global $app;
 	return $app->request()->getRootUri() . '/src/public/' . $asset;
@@ -83,4 +87,19 @@ $app->get('/library/create-folder/:id', function ($id) use ($app) 	{
 	$ctrl->create($id);
 });
 
+$app->post('/library/upload-to/:id', function ($id) use ($app) 	{
+	$ctrl = new \Controller\MediasController($app);
+	$ctrl->uploadTo($id);
+});
+
+$app->get('/migrate', function () use ($app) 	{
+	$ctrl = new \Controller\MigratingController($app);
+	$ctrl->importWordpressPage();
+});
+
+
+$app->get('/post/:id/:country/:region/:site', function ($id) use ($app) 	{
+	$ctrl = new \Controller\PostsController($app);
+	$ctrl->post($id);
+});
 $app->run();

@@ -6,28 +6,97 @@ namespace Model;
 
 class MediaFolder extends \Core\Model {
 
+	public static $libraryWebPath = '/library';
+	public static $libraryPath = realpath(dirname(__FILE__) . DS . '..' . DS . 'public' . DS . 'library');
+
 	public $table = 'media_folders';
 
+	public $defaultFolderName = 'Nouveau dossier';
+
+	/**
+	 * QUERIES all folder at top-level
+	 */
 	public function rootDirectories() {
-		return $this->directoriesWithParent(NULL);
+		return $this->directoriesWithParent(0);
 	}
 
+	/**
+	 * QUERIES all folder inside specified folder
+	 */
 	public function directoriesWithParent($parent) {
 		return $this->queryB
 			->from($this->table)
 			->where('parent_id', $parent);
 	}
 
+	/**
+	 * QUERIES everithing
+	 */
 	public function index() {
 
 		return $this->queryB
 			->from($this->table);
 	}
 
-	public function create($parentId) {
+	/**
+	 * CREATE a folder with specified parent_id and default folder name
+	 */
+	public function create($parentId, $name = null) {
+		$name = $name ? $name : $this->defaultFolderName;
 		if ($parentId == 0)
 			$parentId = NULL;
+		$path = $real = '';
+		if ($parentId != NULL) {
+			$parentPath = $this->queryB->from($this->table, $parentId)->fetch('path');
+			$path .= $parentPath;
+			$real .= $parentPath;
+		}
+
+		$uniqueName = $this->_mkdirFolderWithRetries($this->libraryPath . $path, $name);
+		$slug = \Cake\Utility\Inflector::slug($uniqueName);
+
 		return $this->queryB
-			->insertInto($this->table, ['parent_id' => $parentId]);
+			->insertInto($this->table, [
+				'title' => $uniqueName,
+				'slug' => $slug,
+				'path' => $path . '/' . $slug,
+				'parent_id' => $parentId
+			]);
+	}
+
+	/**
+	 * Creates associated folder and retries until no duplicate found - adding a suffix (in the form ' {number}')
+	 *
+	 *	@return created name
+	 */
+	protected function _mkdirFolderWithRetries($path, $name) {
+		$slug = \Cake\Utility\Inflector::slug($name);
+
+		if ($this->_mkdirCatch($path . '/' . $slug) == false) {
+			$number = 2;
+			while (1) {
+				$newName = $name . ' ' . $number;
+				$newSlug = \Cake\Utility\Inflector::slug($newName);
+				if ($this->_mkdirCatch($path . '/' . $newSlug) == true)
+					break ;
+				else
+					$number++;
+			}
+
+			$name = $newName;
+		}
+		return $name;
+	}
+
+	/**
+	 * Helper function to try/catch the mkdir function
+	 */
+	protected function _mkdirCatch($path) {
+		try {
+			mkdir($path);
+		} catch (\Exception $e) {
+			return false;
+		}
+		return true;
 	}
 }
