@@ -4,6 +4,10 @@
 	<meta charset="UTF-8">		
   	<title>Climbing7 | Topos</title>
 
+  	<script type="text/javascript">
+  	ROOT = '<?= $app->request->getRootUri() ?>';
+  	</script>
+
   	<?= css(['topos.css', 'main.css', 'index.css']) ?>
 
   	<!-- <link href="css/justifiedGallery.css" rel="stylesheet" type="text/css"/> -->
@@ -266,10 +270,11 @@
 	</section>
 </header>
 <!--MAIN-->
-
-
+<section  style="width:1000px;margin:auto;">
+	<p id="flashMessage"><?= $flash['success'] ?></p>
 	<?= $content_for_layout; ?>
 
+</section>
 <!--FIN MAIN -->
 <!--FOOTER-->
 <section style="width:100%;overflow:hidden;background-image:url('images/bg5.png');">

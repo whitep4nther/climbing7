@@ -3,40 +3,64 @@ var ItemList = require('./ItemList.jsx');
 var NavigatorItem = require('./NavigatorItem.jsx');
 var WindowItem = require('./WindowItem.jsx');
 
+var _updateBreadcrumbs = function (breadcrumbs, folder) {
+	var end = 0;
+	for (var i = 0; i < breadcrumbs.length; i++) {
+		if (breadcrumbs[i].id === folder.parent_id) {
+			end = i + 1;
+			break ;
+		}
+	}
+	var r = breadcrumbs.slice(0, end);
+	r.push(folder);
+	return r;
+};
+
 window.Navigator = React.createClass({
 
 	getInitialState: function () {
 		return {
-			currentFolder: null,
+			breadcrumbs: [],
 			navigatorItems: [],
 			windowItems: []
 		};
 	},
 
 	componentDidMount: function () {
-		$.getJSON(ROOT + '/library/folders')
-		.done(function (json) {
-			this.setState({
-				navigatorItems: json
-			});
-		}.bind(this));
+		fetch(ROOT + '/library/folders')
+			.then(function (res) {
+				return res.json();
+			})
+			.then(function (json) {
+				this.setState({
+					navigatorItems: json
+				});
+			}.bind(this))
+			.catch('err', console.error);
+	},
+
+	currentFolder: function () {
+		return this.state.breadcrumbs[this.state.breadcrumbs.length - 1];
 	},
 	loadFolder: function (folderId) {
 		API
 		.getFolderContents(folderId)
-		.done(function (json) {
+		.then(function (res) {
+			return res.json()
+		})
+		.then(function (json) {
 			this.setState({
-				currentFolder: json.folder,
+				breadcrumbs: _updateBreadcrumbs(this.state.breadcrumbs, json.folder),
 				windowItems: json.content
 			});
 		}.bind(this));
 	},
 	createFolder: function () {
-		var id = this.state.currentFolder ? this.state.currentFolder.id : 0;
+		var id = this.state.breadcrumbs.length > 0 ? this.currentFolder().id : 0;
 
 		API
 		.createFolder(id)
-		.done(function () {
+		.then(function (res) {
 			this.loadFolder(id);
 		}.bind(this));
 	},
@@ -44,6 +68,12 @@ window.Navigator = React.createClass({
 		alert('file clicked!');
 	},
 	render: function () {
+		var breadcrumbs = this.state.breadcrumbs.map(function (crumb) {
+			return (
+				<p className="breadcrumb" onClick={this.loadFolder.bind(this, crumb.id)}>{crumb.title}</p>
+			);
+		}.bind(this));
+
 		return (
 			<div id="navigator">
 
@@ -59,6 +89,11 @@ window.Navigator = React.createClass({
 						<input id="uploadHere" className="button" onClick={this.uploadHere} type="submit" defaultValue="Uploader ici!"/>
 						</form>
 					</div>
+					
+					<div id="breadcrumbs">
+						{breadcrumbs}
+					</div>
+
 					<div id="windowContent">
 						<ItemList item={WindowItem}  data={this.state.windowItems} pass={{folderClick: this.loadFolder, fileClick: this.fileClick}}/>
 					</div>

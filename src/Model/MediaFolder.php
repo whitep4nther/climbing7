@@ -7,17 +7,23 @@ namespace Model;
 class MediaFolder extends \Core\Model {
 
 	public static $libraryWebPath = '/library';
-	public static $libraryPath = realpath(dirname(__FILE__) . DS . '..' . DS . 'public' . DS . 'library');
+	public $libraryPath;
 
 	public $table = 'media_folders';
 
 	public $defaultFolderName = 'Nouveau dossier';
 
+
+	public function __construct($qb) {
+		parent::__construct($qb);
+		$this->libraryPath = realpath(dirname(__FILE__) . DS . '..' . DS . 'public' . DS . 'library');
+	}
+
 	/**
 	 * QUERIES all folder at top-level
 	 */
 	public function rootDirectories() {
-		return $this->directoriesWithParent(0);
+		return $this->directoriesWithParent([0, NULL]);
 	}
 
 	/**
@@ -43,10 +49,8 @@ class MediaFolder extends \Core\Model {
 	 */
 	public function create($parentId, $name = null) {
 		$name = $name ? $name : $this->defaultFolderName;
-		if ($parentId == 0)
-			$parentId = NULL;
 		$path = $real = '';
-		if ($parentId != NULL) {
+		if ($parentId != 0) {
 			$parentPath = $this->queryB->from($this->table, $parentId)->fetch('path');
 			$path .= $parentPath;
 			$real .= $parentPath;

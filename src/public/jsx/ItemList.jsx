@@ -14,7 +14,7 @@ var ItemList = React.createClass({
 		}.bind(this));
 
 		return (
-			<div className="navigatorList">
+			<div className="itemList">
 				{itemNodes}
 			</div>
 		);

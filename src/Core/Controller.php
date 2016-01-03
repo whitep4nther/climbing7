@@ -17,11 +17,8 @@ class Controller {
 		}
 	}
 
-	public function render($template, $data = array(), $layout = false) {
+	public function render($template, $data = array(), $layout = 'default') {
 		$view = $this->app->view->fetch($template, $data);
-
-		if (!$layout)
-			$layout = 'default';
 
 		$this->app->render($layout . '.php', ['content_for_layout' => $view]);
 	}

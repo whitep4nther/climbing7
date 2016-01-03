@@ -4,8 +4,12 @@ require_once 'src/config/constants.php';
 require CONFIG_DIR . DS . 'bootstrap.php';
 
 $app = new \Core\Slimmy([
+	'view' => new \Core\CustomView(),
 	'templates.path' => './src/views'
 ]);
+$app->add(new \Slim\Middleware\SessionCookie(array(
+    'expires' => '300 minutes'
+)));
 
 /**
  * Application Dependencies
@@ -98,8 +102,23 @@ $app->get('/migrate', function () use ($app) 	{
 });
 
 
-$app->get('/post/:id/:country/:region/:site', function ($id) use ($app) 	{
+$app->get('/post/:id/:country/:region/:site', function ($id, $country, $region, $site) use ($app) {
 	$ctrl = new \Controller\PostsController($app);
-	$ctrl->post($id);
+	$ctrl->post($id, $country, $region, $site);
+})->name('postRoute');
+
+/** ADMIN ***/
+$app->group('/admin', function () use ($app) {
+
+	$app->get('/post/:id', function ($id) use ($app) {
+		$ctrl = new \Controller\PostsController($app);
+		$ctrl->admin_post($id);
+	})->name('adminPost');
+
+	$app->post('/post/:id', function ($id) use ($app) {
+		$ctrl = new \Controller\PostsController($app);
+		$ctrl->admin_postEdited($id);
+	})->name('postEdited');
 });
+
 $app->run();

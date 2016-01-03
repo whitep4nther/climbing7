@@ -2,6 +2,8 @@
 
 namespace Helper;
 
+use \Cake\Utility\Inflector;
+
 class PostHelper {
 
 	static public function title($post) {
@@ -12,16 +14,25 @@ class PostHelper {
 		return $post['site'].', '.$post['region'].', '.$post['country'];
 	}
 
-	static public function rateToStars($rate) {
+	static public function rateToStars($rate, $fullStar = '★', $emptyStar = '☆') {
 
 		$string = '';
 
 		for ($i = 0; $i < 5; $i++) {
 			if ($i < $rate)
-				$string .= '★';
+				$string .= $fullStar;
 			else
-				$string .= '☆';
+				$string .= $emptyStar;
 		}
 		return $string;
+	}
+
+	static public function urlForPost($post) {
+		return \Slim\Slim::getInstance()->urlFor('postRoute', [
+			'id' => $post['id'],
+			'country' => Inflector::slug($post['country'], '-'),
+			'region' => Inflector::slug($post['region'], '-'),
+			'site' => Inflector::slug($post['site'], '-')
+		]);
 	}
 }
