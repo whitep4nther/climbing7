@@ -1,9 +1,10 @@
 <?php
 
+namespace Controller;
+
 use \Core\Controller;
 use \Symfony\Component\DomCrawler\Crawler;
-
-namespace Controller;
+use \Cake\Utility\Inflector;
 
 class MigratingController extends \Core\Controller {
 
@@ -16,17 +17,14 @@ class MigratingController extends \Core\Controller {
 		$crawler = new \Symfony\Component\DomCrawler\Crawler();
 		$crawler->addContent(file_get_contents(__DIR__ . '/hihi.html'));
 
-		$title = explode(',', $crawler->filter('#single .entry-title')->text());
+		$title = $crawler->filter('#single .entry-title')->text();
 
 		$post = [];
 
-		$post['site'] = trim($title[0]);
-		$post['region'] = trim($title[1]);
-		$post['country'] = trim(substr($title[2], 0, strpos($title[2], '✯')));
 		$post['rate'] = substr_count(strstr($title[2], '✯'), '✯');
 		$post['category_id'] = $categoryId;
 
-		$post['title'] = '';
+		$post['title'] = $title;
 		$post['approach'] = '';
 		$stringDate = substr(preg_replace('/(.*)entrée a été publiée le (.*) par(.*)$/i', '$2', $crawler->filter('.meta .meta-information')->text()), 16);
 		$stringDate = explode(' ', $stringDate);
@@ -35,41 +33,41 @@ class MigratingController extends \Core\Controller {
 		$stringDate[1] = array_search($stringDate[1], $months);
 		$post['date'] =  implode('-', array_reverse($stringDate));
 
-		$ps = $crawler->filter('#single > p');
-		for ($i = 0; $i < count($ps); $i++) {
-			$p = $ps->eq($i);
-			if ($i == 0) {
-				$post['label'] = substr($p->text(), 0, 250);
-				$post['presentation'] = $p->text();
-			} else {
-				if ($p->text() == "Topo du canyon")
-					break ;
-				$post['approach'] .= str_replace('<br>', "\n", $p->html())."\n\n";
-			}
-			
-		}
+		$ps = $crawler->filter('#single > p')->reduce(function($node, $i) {
+			if (preg_match('/^<strong>(.*)topo(.*)<\/strong>$/i', $node->html())
+				|| preg_match('/^<strong>(.*)galerie(.*)<\/strong>$/i', $node->html()))
+				return false;
+			return true;
+		})->extract('_text');
 
-		$post['label'] = substr($crawler->filter('#single > p')->first()->text(), 0, 250);
-		$post['presentation'] = $crawler->filter('#single > p')->first()->text();
+		debug($ps);
+
+		$post['presentation'] = array_shift($ps);
+		$post['label'] = substr($post['presentation'], 0, 255);
+		$post['access'] = array_shift($ps);
+		$post['approach'] = array_shift($ps);
+
+		$post['parcours'] = '';
+		$txt = &$post['parcours'];
+		foreach ($ps as $i => $p) {
+			if (preg_match('/^(.*)(sortie|retour)(.*)(?s)(.*)$/i', $p)) {
+				$post['back'] = '';
+				$txt = &$post['back'];
+			}
+			$txt .= $p;
+		}
 
 		$imgs = $crawler->filter('.tiled-gallery img');
 
-		$folder = $this->MediaFolder->q()->where('title', $category)->fetch();
-		$lastId = (!$folder) ? $this->MediaFolder->create(0, 'Canyoning')->execute() : $folder['id'];
+		$folder = $this->MediaFolder->q()->where('title', $stringDate[2])->fetch();
+		$lastId = (!$folder) ? $this->MediaFolder->create(0, $stringDate[2])->execute() : $folder['id'];
 
-		$folder = $this->MediaFolder->q()->where(['title' => $post['country'], 'parent_id' => $lastId])->fetch();
-		$lastId = (!$folder) ? $this->MediaFolder->create($lastId, $post['country'])->execute() : $folder['id'];
-
-		$folder = $this->MediaFolder->q()->where(['title' => $post['region'], 'parent_id' => $lastId])->fetch();
-		$lastId = (!$folder) ? $this->MediaFolder->create($lastId, $post['region'])->execute() : $folder['id'];
-
-		$folder = $this->MediaFolder->q()->where(['title' => $post['site'], 'parent_id' => $lastId])->fetch();
-		$lastId = (!$folder) ? $this->MediaFolder->create($lastId, $post['site'])->execute() : $folder['id'];
+		$folder = $this->MediaFolder->q()->where(['title' => $title, 'parent_id' => $lastId])->fetch();
+		$lastId = (!$folder) ? $this->MediaFolder->create($lastId, $title)->execute() : $folder['id'];
 
 		$urls = array_map(function ($v) {
 			return strtok($v, '?');
 		}, $imgs->extract(['src']));
-		$urls = array_slice($urls, 0, 3);
 		$ids = $this->Media->downloadFilesToFolder($urls, $lastId);
 
 		$postId = $this->Post->queryB()->insertInto($this->Post->table(), $post)->execute();

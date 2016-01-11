@@ -1,1 +1,0 @@
-<a href="#">Ouvrir le manager</a>

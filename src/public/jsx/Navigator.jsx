@@ -27,27 +27,26 @@ window.Navigator = React.createClass({
 	},
 
 	componentDidMount: function () {
-		fetch(ROOT + '/library/folders')
-			.then(function (res) {
-				return res.json();
-			})
-			.then(function (json) {
-				this.setState({
-					navigatorItems: json
-				});
-			}.bind(this))
-			.catch('err', console.error);
+		API
+		.getFolders()
+		.then(function (json) {
+			this.setState({
+				navigatorItems: json
+			});
+		}.bind(this));
 	},
 
 	currentFolder: function () {
 		return this.state.breadcrumbs[this.state.breadcrumbs.length - 1];
 	},
+	currentFolderId: function () {
+		var folder = this.currentFolder();
+		return folder ? folder.id : 0;
+	},
+
 	loadFolder: function (folderId) {
 		API
 		.getFolderContents(folderId)
-		.then(function (res) {
-			return res.json()
-		})
 		.then(function (json) {
 			this.setState({
 				breadcrumbs: _updateBreadcrumbs(this.state.breadcrumbs, json.folder),
@@ -64,6 +63,13 @@ window.Navigator = React.createClass({
 			this.loadFolder(id);
 		}.bind(this));
 	},
+
+	uploadHere: function (e) {
+		e.preventDefault();
+		API
+		.uploadFiles(this.currentFolderId(), this.refs.filesForm);
+	},
+
 	fileClick: function () {
 		alert('file clicked!');
 	},
@@ -84,9 +90,9 @@ window.Navigator = React.createClass({
 					<div id="windowToolbar">
 						<div className="button" onClick={this.createFolder}>Nouveau dossier</div>
 
-						<form action="/climbing7/library/upload-to/17" encType="multipart/form-data" method="post">
-						<input id="uploadField" type="file" name="files[]" multiple/>
-						<input id="uploadHere" className="button" onClick={this.uploadHere} type="submit" defaultValue="Uploader ici!"/>
+						<form ref="filesForm" onSubmit={this.uploadHere} encType="multipart/form-data" method="post">
+							<input id="uploadField" type="file" name="files[]" multiple/>
+							<input id="uploadHere" className="button" type="submit" defaultValue="Uploader ici!"/>
 						</form>
 					</div>
 					

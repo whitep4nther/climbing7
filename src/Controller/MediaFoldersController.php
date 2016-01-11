@@ -9,18 +9,15 @@ class MediaFoldersController extends \Core\Controller {
 
 	protected $models = ['MediaFolder', 'Media'];
 
-	public function rootDirectories() {
-		$this->render('others/json.php', ['data' => $this->MediaFolder->rootDirectories()->fetchAll()]);
-	}
-
 	public function create($parentId) {
-		
-		$this->render('others/json.php', [
-			'data' => $this->MediaFolder->create($parentId)->execute()	
-		]);
+		return $this->jsonResponse($this->MediaFolder->create($parentId)->execute());
+	}
+	
+	public function getRootDirectories() {
+		return $this->jsonResponse($this->MediaFolder->rootDirectories()->fetchAll());
 	}
 
-	public function contentOfFolder($folderId) {
+	public function getContentOfFolder($folderId) {
 		$folder = $this->MediaFolder->queryB()
 			->from($this->MediaFolder->table, $folderId)->fetch();
 
@@ -35,9 +32,9 @@ class MediaFoldersController extends \Core\Controller {
 			return $value;
 		}, $subfolders);
 		
-		$this->render('others/json.php', ['data' => [
+		return $this->jsonResponse([
 			'folder' => $folder,
 			'content' => array_merge($medias, $subfolders)
-		]]);
+		]);
 	}
 }

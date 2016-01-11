@@ -10,10 +10,10 @@ var ItemList = React.createClass({
 		};
 	},
 	render: function () {
-		var itemNodes = this.props.data.map((function (data) {
+		var itemNodes = this.props.data.map(function (data) {
 			var ClassItem = this.props.item;
 			return React.createElement(ClassItem, _extends({ key: data.id, data: data }, this.props.pass));
-		}).bind(this));
+		}.bind(this));
 
 		return React.createElement(
 			"div",
@@ -56,46 +56,53 @@ window.Navigator = React.createClass({
 	},
 
 	componentDidMount: function () {
-		fetch(ROOT + '/library/folders').then(function (res) {
-			return res.json();
-		}).then((function (json) {
+		API.getFolders().then(function (json) {
 			this.setState({
 				navigatorItems: json
 			});
-		}).bind(this)).catch('err', console.error);
+		}.bind(this));
 	},
 
 	currentFolder: function () {
 		return this.state.breadcrumbs[this.state.breadcrumbs.length - 1];
 	},
+	currentFolderId: function () {
+		var folder = this.currentFolder();
+		return folder ? folder.id : 0;
+	},
+
 	loadFolder: function (folderId) {
-		API.getFolderContents(folderId).then(function (res) {
-			return res.json();
-		}).then((function (json) {
+		API.getFolderContents(folderId).then(function (json) {
 			this.setState({
 				breadcrumbs: _updateBreadcrumbs(this.state.breadcrumbs, json.folder),
 				windowItems: json.content
 			});
-		}).bind(this));
+		}.bind(this));
 	},
 	createFolder: function () {
 		var id = this.state.breadcrumbs.length > 0 ? this.currentFolder().id : 0;
 
-		API.createFolder(id).then((function (res) {
+		API.createFolder(id).then(function (res) {
 			this.loadFolder(id);
-		}).bind(this));
+		}.bind(this));
 	},
+
+	uploadHere: function (e) {
+		e.preventDefault();
+		API.uploadFiles(this.currentFolderId(), this.refs.filesForm);
+	},
+
 	fileClick: function () {
 		alert('file clicked!');
 	},
 	render: function () {
-		var breadcrumbs = this.state.breadcrumbs.map((function (crumb) {
+		var breadcrumbs = this.state.breadcrumbs.map(function (crumb) {
 			return React.createElement(
 				'p',
 				{ className: 'breadcrumb', onClick: this.loadFolder.bind(this, crumb.id) },
 				crumb.title
 			);
-		}).bind(this));
+		}.bind(this));
 
 		return React.createElement(
 			'div',
@@ -118,9 +125,9 @@ window.Navigator = React.createClass({
 					),
 					React.createElement(
 						'form',
-						{ action: '/climbing7/library/upload-to/17', encType: 'multipart/form-data', method: 'post' },
+						{ ref: 'filesForm', onSubmit: this.uploadHere, encType: 'multipart/form-data', method: 'post' },
 						React.createElement('input', { id: 'uploadField', type: 'file', name: 'files[]', multiple: true }),
-						React.createElement('input', { id: 'uploadHere', className: 'button', onClick: this.uploadHere, type: 'submit', defaultValue: 'Uploader ici!' })
+						React.createElement('input', { id: 'uploadHere', className: 'button', type: 'submit', defaultValue: 'Uploader ici!' })
 					)
 				),
 				React.createElement(

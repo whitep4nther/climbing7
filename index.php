@@ -1,25 +1,9 @@
 <?php
 
-require_once 'src/config/constants.php';
-require CONFIG_DIR . DS . 'bootstrap.php';
+require_once 'src/config/bootstrap.php';
 
-$app = new \Core\Slimmy([
-	'view' => new \Core\CustomView(),
-	'templates.path' => './src/views'
-]);
-$app->add(new \Slim\Middleware\SessionCookie(array(
-    'expires' => '300 minutes'
-)));
-
-/**
- * Application Dependencies
- */
-$app->container->singleton('PDO', function () {
-	return new \PDO("mysql:dbname=climbing7;host=localhost;", "root", "123456");
-});
-$app->container->singleton('fPDO', function () use ($app) {
-	return new \FluentPDO($app->PDO);
-});
+$container = new \Slim\Container(include CONFIG_DIR . DS . 'container.config.php');
+$app = new \Slim\App($container);
 
 /**
  * Application Helpers
@@ -66,59 +50,48 @@ function css($asset) {
 /**
  * Application Routing
  */
-$app->get('/', function () use ($app) 	{
-	$ctrl = new \Controller\PostsController($app);
-	$ctrl->index();
-});
+function CallControllerMethod($controller, $method) {
+	$controller = '\\Controller\\'.$controller;
 
-$app->get('/library', function () use ($app) 	{
-	$ctrl = new \Controller\MediaManagerController($app);
-	$ctrl->manager();
-});
+	return function ($request, $response, $args) use ($controller, $method) {
+		$ctrl = new $controller($this, $request, $response);
+		$return = call_user_func_array([$ctrl, $method], $args);
+		if ($return)
+			return $return;
+	};
+}
 
-$app->get('/library/folders', function () use ($app) 	{
-	$ctrl = new \Controller\MediaFoldersController($app);
-	$ctrl->rootDirectories();
-});
 
-$app->get('/library/folder/:id', function ($id) use ($app) 	{
-	$ctrl = new \Controller\MediaFoldersController($app);
-	$ctrl->contentOfFolder($id);
-});
+$app->get('/', CallControllerMethod('PostsController', 'index'));
 
-$app->get('/library/create-folder/:id', function ($id) use ($app) 	{
-	$ctrl = new \Controller\MediaFoldersController($app);
-	$ctrl->create($id);
-});
+$app->get('/post/{id:\d+}/{title}', CallControllerMethod('PostsController', 'post'))->setName('post');
 
-$app->post('/library/upload-to/:id', function ($id) use ($app) 	{
-	$ctrl = new \Controller\MediasController($app);
-	$ctrl->uploadTo($id);
-});
-
-$app->get('/migrate', function () use ($app) 	{
-	$ctrl = new \Controller\MigratingController($app);
+$app->get('/migrate', function ($request, $response, $args) {
+	$ctrl = new \Controller\MigratingController($this);
 	$ctrl->importWordpressPage();
 });
 
-
-$app->get('/post/:id/:country/:region/:site', function ($id, $country, $region, $site) use ($app) {
-	$ctrl = new \Controller\PostsController($app);
-	$ctrl->post($id, $country, $region, $site);
-})->name('postRoute');
-
 /** ADMIN ***/
-$app->group('/admin', function () use ($app) {
+$app->group('/admin', function () {
 
-	$app->get('/post/:id', function ($id) use ($app) {
-		$ctrl = new \Controller\PostsController($app);
-		$ctrl->admin_post($id);
-	})->name('adminPost');
-
-	$app->post('/post/:id', function ($id) use ($app) {
-		$ctrl = new \Controller\PostsController($app);
-		$ctrl->admin_postEdited($id);
-	})->name('postEdited');
+	$this->get('/post/{id:\d+}', CallControllerMethod('PostsController', 'admin_post'))->setName('admin_post');
+	$this->post('/post/{id:\d+}', CallControllerMethod('PostsController', 'admin_postEdited'))->setName('admin_postEdited');
 });
+
+/** LIBRARY ***/
+$app->group('/library', function () {
+
+	$this->get('', CallControllerMethod('MediaManagerController', 'manager'));
+
+	$this->get('/folders', CallControllerMethod('MediaFoldersController', 'getRootDirectories'));
+
+	$this->get('/folder/{id:\d+}', CallControllerMethod('MediaFoldersController', 'getContentOfFolder'));
+
+	$this->get('/create/{id:\d+}', CallControllerMethod('MediaFoldersController', 'create'));
+
+	$this->post('/upload-to/{id:\d+}', CallControllerMethod('MediasController', 'uploadTo'));
+});
+
+
 
 $app->run();

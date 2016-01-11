@@ -10,53 +10,52 @@ class PostsController extends \Core\Controller {
 	protected $models = ['Post', 'Category', 'Media', 'MediaToPost'];
 
 	public function index() {
-		$lastPosts = $this->Post->getPosts()->fetchAll();
-		$categories = $this->Category->q()->where('id', Hash::extract($lastPosts, '{n}.category_id'))->fetchAll('id');
+		$posts = $this->Post->getPosts()->fetchAll();
+		$categories = $this->Category->q()->where('id', Hash::extract($posts, '{n}.category_id'))->fetchAll('id');
+		$posts = array_merge($posts, $posts, $posts, $posts, $posts);
 
-		$lastPosts = array_merge($lastPosts, $lastPosts, $lastPosts, $lastPosts, $lastPosts);
-
-		$this->render('index.php', [
-			'posts' => $lastPosts,
+		$this->render('home.twig', [
+			'featuredPosts' => array_splice($posts, 0, 2),
+			'posts' => $posts,
 			'categories' => $categories
 		]);
 	}
 
-	public function post($id, $country, $region, $site) {
+	public function post($id, $title) {
 		$post = $this->Post->q()->where('id', $id)->fetch();
 
 		if (!$post 
-			|| Inflector::slug($post['country'], '-') != $country
-			|| Inflector::slug($post['region'], '-') != $region
-			|| Inflector::slug($post['site'], '-') != $site)
-			$this->app->notFound();
+			|| Inflector::slug($post['title'], '-') != $title)
+			return $this->app['notFoundHandler']($this->request, $this->response);
 
 		$category = $this->Category->q()->where('id', $post['category_id'])->fetch();
 
-		$mediasIds = $this->MediaToPost->q()->where('post_id', $post['id'])->fetchPairs('id', 'id');
+		$mediasIds = $this->MediaToPost->q()->where('post_id', $post['id'])->fetchPairs('id', 'media_id');
 		$medias = $this->Media->q()->where('id', $mediasIds)->fetchAll();
 
-
-		$this->render('posts/post.php', [
+		$this->render('posts/post.twig', [
 			'post' => $post,
 			'category' => $category,
 			'medias' => $medias
 		]);
 	}
 
-	/*** ADMIN ***/
+	/*** 
+	* ADMIN 
+	***/
 	public function admin_post($id) {
 		$post = $this->Post->q()->where('id', $id)->fetch();
 		$categories = $this->Category->q()->fetchAll();
-		$this->render('posts/admin_post.php', [
+
+		$this->render('posts/admin_post.twig', [
 			'post' => $post,
 			'categories' => $categories
 		]);
 	}
 
 	public function admin_postEdited($id) {
-		$this->Post->queryB()->update($this->Post->table())->set($this->app->request->post())->where('id', $id)->execute();
+		$this->Post->queryB()->update($this->Post->table())->set($this->app->request->getParsedBody())->where('id', $id)->execute();
 
-		$this->app->flash('success', 'Le post a bien été mis a jour');
-		$this->app->response->redirect($this->app->urlFor('adminPost', ['id' => $id]), 200);
+		return $this->redirectResponse('admin_post', ['id' => $id]);
 	}
 }
