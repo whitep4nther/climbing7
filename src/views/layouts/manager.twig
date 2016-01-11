@@ -1,0 +1,23 @@
+<html>
+	<head>
+		<title>Manager</title>
+
+		<script type="text/javascript">
+		var ROOT = '{{ base_url() }}';
+		</script> 
+
+
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.6/react.js"></script>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.6/react-dom.js"></script>
+
+		{{ css(['reset.css', 'manager.css']) }}
+	</head>
+<body>
+	{% block content %}{% endblock %}
+
+	{% block scripts %}
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+		{{ js(['functions.js', 'API.js', 'bundle.js']) }}
+	{% endblock %}
+</body>
+</html>
