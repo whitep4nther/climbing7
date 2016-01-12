@@ -2,7 +2,11 @@ var API = {};
 
 API._makeRequest = function (url) {
 	return $.getJSON(ROOT + url);
-}
+};
+
+API.updatePostFields = function (postId, fields) {
+	return $.post(ROOT + '/admin/post/change/'+postId, fields);
+};
 
 API.getFolders = function () {
 	return this._makeRequest('/library/folders');

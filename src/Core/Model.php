@@ -19,8 +19,10 @@ class Model {
 		return $this->queryB;
 	}
 
-	public function q() {
-		return $this->queryB->from($this->table);
+	public function q($id = null) {
+		if (!$id)
+			return $this->queryB->from($this->table);
+		return $this->queryB->from($this->table, $id);	
 	}
 }
 

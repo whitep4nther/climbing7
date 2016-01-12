@@ -47,15 +47,24 @@ class PostsController extends \Core\Controller {
 		$post = $this->Post->q()->where('id', $id)->fetch();
 		$categories = $this->Category->q()->fetchAll();
 
+		$cover = $this->Media->q($post['cover_id'])->fetch();
+		$gallery = $this->Media->mediasForPost($id)->fetchAll();
+
 		$this->render('posts/admin_post.twig', [
 			'post' => $post,
+			'cover' => $cover,
+			'gallery' => $gallery,
 			'categories' => $categories
 		]);
 	}
 
 	public function admin_postEdited($id) {
-		$this->Post->queryB()->update($this->Post->table())->set($this->app->request->getParsedBody())->where('id', $id)->execute();
+		$this->admin_postChangeFields($id);
 
 		return $this->redirectResponse('admin_post', ['id' => $id]);
+	}
+
+	public function admin_postChangeFields($id) {
+		$this->Post->queryB()->update($this->Post->table(), $this->app->request->getParsedBody(), $id)->execute();
 	}
 }

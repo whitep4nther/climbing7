@@ -23,7 +23,7 @@ var WindowItem = React.createClass({
 		if (this.props.data.type == 'folder')
 			this.props.folderClick(this.props.data.id);
 		else
-			this.props.fileClick();
+			this.props.fileClick(this.props.data);
 	},
 
 	render() {

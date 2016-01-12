@@ -9,7 +9,9 @@
 
 
   	<script type="text/javascript">
-  	ROOT = '<?= $app->request->getRootUri() ?>';
+  	ROOT = '{{ basePath() }}';
+  	LIBRARY_DIR = '{{ library('')}}';
+  	MEDIA_DIR = ROOT + '/media';
   	</script>
 
   	<!-- CSS -->

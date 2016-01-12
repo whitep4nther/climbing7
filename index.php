@@ -4,6 +4,7 @@ require_once 'src/config/bootstrap.php';
 
 $container = new \Slim\Container(include CONFIG_DIR . DS . 'container.config.php');
 $app = new \Slim\App($container);
+// debug($_SERVER);
 
 /**
  * Application Helpers
@@ -76,6 +77,8 @@ $app->group('/admin', function () {
 
 	$this->get('/post/{id:\d+}', CallControllerMethod('PostsController', 'admin_post'))->setName('admin_post');
 	$this->post('/post/{id:\d+}', CallControllerMethod('PostsController', 'admin_postEdited'))->setName('admin_postEdited');
+
+	$this->post('/post/change/{id:\d+}', CallControllerMethod('PostsController', 'admin_postChangeFields'))->setName('admin_postChangeField');
 });
 
 /** LIBRARY ***/

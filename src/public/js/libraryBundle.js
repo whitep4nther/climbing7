@@ -47,6 +47,8 @@ var _updateBreadcrumbs = function (breadcrumbs, folder) {
 window.Navigator = React.createClass({
 	displayName: 'Navigator',
 
+	_callbackSelectionDone: null,
+
 	getInitialState: function () {
 		return {
 			breadcrumbs: [],
@@ -56,11 +58,17 @@ window.Navigator = React.createClass({
 	},
 
 	componentDidMount: function () {
+		var queryParams = getQueryParams();
+
+		if (queryParams['callback']) this._callbackSelectionDone = queryParams['callback'];
+
 		API.getFolders().then(function (json) {
 			this.setState({
 				navigatorItems: json
 			});
 		}.bind(this));
+
+		this.loadFolder(27);
 	},
 
 	currentFolder: function () {
@@ -92,8 +100,11 @@ window.Navigator = React.createClass({
 		API.uploadFiles(this.currentFolderId(), this.refs.filesForm);
 	},
 
-	fileClick: function () {
-		alert('file clicked!');
+	fileClick: function (file) {
+		if (this._callbackSelectionDone && window.opener && window.opener[this._callbackSelectionDone]) {
+			window.opener[this._callbackSelectionDone](file);
+			window.close();
+		} else alert('File selected, but no callback associated');
 	},
 	render: function () {
 		var breadcrumbs = this.state.breadcrumbs.map(function (crumb) {
@@ -184,7 +195,7 @@ var WindowItem = React.createClass({
 	},
 
 	click() {
-		if (this.props.data.type == 'folder') this.props.folderClick(this.props.data.id);else this.props.fileClick();
+		if (this.props.data.type == 'folder') this.props.folderClick(this.props.data.id);else this.props.fileClick(this.props.data);
 	},
 
 	render() {

@@ -24,6 +24,7 @@ class Climbing7HelpersExtension extends \Twig_Extension
             new \Twig_SimpleFunction('asset', array($this, 'asset')),
             new \Twig_SimpleFunction('css', array($this, 'css'), ['is_safe' => ['html']]),
             new \Twig_SimpleFunction('js', array($this, 'js'), ['is_safe' => ['html']]),
+            new \Twig_SimpleFunction('basePath', array($this, 'basePath')),
             new \Twig_SimpleFunction('postUrl', array($this, 'postUrl'))
         ];
     }
@@ -33,6 +34,10 @@ class Climbing7HelpersExtension extends \Twig_Extension
             'id' => $post['id'],
             'title' => Inflector::slug($post['title'], '-')
         ], $queryParams);
+    }
+
+    public function basePath() {
+        return $this->uri->getBasePath();
     }
 
     /**

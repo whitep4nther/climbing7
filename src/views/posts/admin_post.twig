@@ -8,6 +8,10 @@
 
 	<img src="{{ asset('/img/canyoning.jpg') }}" style="display:block; width:175px;height:175px;border:2px solid white;position:absolute;z-index:10;top:265px;"/>
 
+	<div id="galleryEditor"></div>
+
+	<a href="#" onclick="openLibrary('testFn');return false;">Open manager</a>
+
 	<form method="POST" action="{{ path_for('admin_postEdited', {'id': post.id}) }}">
 
 		<div class="form-group">
@@ -113,4 +117,23 @@
 		<input type="submit" value="Éditer"/>
 
 	</form>
+{% endblock %}
+
+{% block scripts %}
+	{{ parent() }}
+
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.6/react.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.6/react-dom.js"></script>
+	{{ js(['functions.js', 'API.js', 'postHelpersBundle.js']) }}
+
+	<script>
+	// ReactDOM.render(
+	// 	React.createElement(PostSingleImageChanger, {postId: {{ post.id }}, field: 'cover_id', image: {{ json_encode(cover)|raw }} }),
+	// 	document.getElementById('cover-imageChanger')
+	// );
+	ReactDOM.render(
+		React.createElement(PostGalleryEditor, {postId: {{ post.id }}, images: {{ json_encode(gallery)|raw }} }),
+		document.getElementById('galleryEditor')
+	);
+	</script>
 {% endblock %}

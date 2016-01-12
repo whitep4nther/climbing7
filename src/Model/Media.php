@@ -8,6 +8,13 @@ class Media extends \Core\Model {
 
 	protected $table = 'medias';
 
+	public function mediasForPost($postId) {
+		$MediaToPost = new \Model\MediaToPost($this->queryB);
+
+		$mediasIds = $MediaToPost->q()->where('post_id', $postId)->fetchPairs('id', 'media_id');
+		return $this->q($mediasIds);
+	}
+
 	public function mediasForFolder($folderId) {
 		return $this->queryB
 			->from($this->table)
