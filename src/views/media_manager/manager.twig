@@ -12,8 +12,10 @@
 	{{ parent() }}
 
 	<script type="text/javascript">
+	var params = getQueryParams();
+	console.log(params);
 	ReactDOM.render(
-		React.createElement(Navigator),
+		React.createElement(Navigator, {callback: params['callback'], multiple: params['multiple']}),
 		document.getElementById('root')
 	);
 	</script>

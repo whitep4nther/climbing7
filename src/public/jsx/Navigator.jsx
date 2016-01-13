@@ -3,6 +3,19 @@ var ItemList = require('./ItemList.jsx');
 var NavigatorItem = require('./NavigatorItem.jsx');
 var WindowItem = require('./WindowItem.jsx');
 
+var _updateSelectedFiles = function (selectedFiles, clickedFile) {
+	var n = selectedFiles.slice();
+	var end = 0;
+	for (var i = 0; i < n.length; i++) {
+		if (n[i].id === clickedFile.id) {
+			n.splice(i, 1);
+			return n;
+		}
+	}
+	n.push(clickedFile);
+	return n;
+};
+
 var _updateBreadcrumbs = function (breadcrumbs, folder) {
 	var end = 0;
 	for (var i = 0; i < breadcrumbs.length; i++) {
@@ -22,6 +35,7 @@ window.Navigator = React.createClass({
 
 	getInitialState: function () {
 		return {
+			selectedFiles: [],
 			breadcrumbs: [],
 			navigatorItems: [],
 			windowItems: []
@@ -79,14 +93,38 @@ window.Navigator = React.createClass({
 		.uploadFiles(this.currentFolderId(), this.refs.filesForm);
 	},
 
-	fileClick: function (file) {
-		if (this._callbackSelectionDone && window.opener && window.opener[this._callbackSelectionDone]) {
-			window.opener[this._callbackSelectionDone](file);
+	isFileSelected: function (file) {
+		for (var i = 0; i < this.state.selectedFiles.length; i++) {
+			if (this.state.selectedFiles[i].id == file.id)
+				return true;
+		}
+		return false;
+	},
+	toggleSelectedFile: function (file) {
+		this.setState({
+			selectedFiles: _updateSelectedFiles(this.state.selectedFiles, file)
+		});
+		// if (this._callbackSelectionDone && window.opener && window.opener[this._callbackSelectionDone]) {
+		// 	window.opener[this._callbackSelectionDone](file);
+		// 	window.close();
+		// } else
+		// 	alert('File selected, but no callback associated');
+	},
+	confirmSelection: function () {
+		if (window.opener && this.props.callback && window.opener[this.props.callback]) {
+			window.opener[this.props.callback](this.state.selectedFiles);
 			window.close();
 		} else
-			alert('File selected, but no callback associated');
+			alert('Selection confirmed, but no callback has been specified (contact Ilyes hehe)');
 	},
-	render: function () {
+	render: function () { 
+		var files = this.state.selectedFiles.map(function (file) {
+			return (
+				<div className="selected-file" onClick={this.toggleSelectedFile.bind(this, file)}>
+						<img src={MEDIA_DIR + file.full_path + '?height=100'}/>
+				</div>
+			);
+		}.bind(this));
 		var breadcrumbs = this.state.breadcrumbs.map(function (crumb) {
 			return (
 				<p className="breadcrumb" onClick={this.loadFolder.bind(this, crumb.id)}>{crumb.title}</p>
@@ -101,6 +139,9 @@ window.Navigator = React.createClass({
 				</div>
 				<div id="window">
 					<div id="windowToolbar">
+						{files}
+						<button onClick={this.confirmSelection}>Confirmer la sélection</button>
+
 						<div className="button" onClick={this.createFolder}>Nouveau dossier</div>
 
 						<form ref="filesForm" onSubmit={this.uploadHere} encType="multipart/form-data" method="post">
@@ -114,7 +155,7 @@ window.Navigator = React.createClass({
 					</div>
 
 					<div id="windowContent">
-						<ItemList item={WindowItem}  data={this.state.windowItems} pass={{folderClick: this.loadFolder, fileClick: this.fileClick}}/>
+						<ItemList item={WindowItem}  data={this.state.windowItems} pass={{folderClick: this.loadFolder, fileClick: this.toggleSelectedFile, isSelected: this.isFileSelected}}/>
 					</div>
 				</div>
 			</div>

@@ -19,6 +19,19 @@ var getQueryParams = function () {
    return urlParams;
 };
 
+Array.prototype.indexOfFn = function (value, fn) {
+    for (var i = 0; i < this.length; i++) {
+        console.log(this[i], value);
+        if (fn(this[i], value))
+            return i;
+    }
+    return false;
+};
+
 var openLibrary = function (callback, multiple) {
-	window.open(ROOT + '/library?callback='+callback, 'Librairie', 'width=1200, height=600, left=500, top=300');
+    if (multiple)
+        multiple = '1';
+    else
+        multiple = '0';
+	window.open(ROOT + '/library?callback='+callback+'&multiple='+multiple, 'Librairie', 'width=1200, height=600, left=500, top=300');
 };

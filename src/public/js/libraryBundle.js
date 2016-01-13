@@ -1,4 +1,54 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+/*!
+  Copyright (c) 2016 Jed Watson.
+  Licensed under the MIT License (MIT), see
+  http://jedwatson.github.io/classnames
+*/
+/* global define */
+
+(function () {
+	'use strict';
+
+	var hasOwn = {}.hasOwnProperty;
+
+	function classNames () {
+		var classes = [];
+
+		for (var i = 0; i < arguments.length; i++) {
+			var arg = arguments[i];
+			if (!arg) continue;
+
+			var argType = typeof arg;
+
+			if (argType === 'string' || argType === 'number') {
+				classes.push(arg);
+			} else if (Array.isArray(arg)) {
+				classes.push(classNames.apply(null, arg));
+			} else if (argType === 'object') {
+				for (var key in arg) {
+					if (hasOwn.call(arg, key) && arg[key]) {
+						classes.push(key);
+					}
+				}
+			}
+		}
+
+		return classes.join(' ');
+	}
+
+	if (typeof module !== 'undefined' && module.exports) {
+		module.exports = classNames;
+	} else if (typeof define === 'function' && typeof define.amd === 'object' && define.amd) {
+		// register as 'classnames', consistent with npm package name
+		define('classnames', [], function () {
+			return classNames;
+		});
+	} else {
+		window.classNames = classNames;
+	}
+}());
+
+},{}],2:[function(require,module,exports){
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var ItemList = React.createClass({
@@ -25,11 +75,24 @@ var ItemList = React.createClass({
 
 module.exports = ItemList;
 
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 
 var ItemList = require('./ItemList.jsx');
 var NavigatorItem = require('./NavigatorItem.jsx');
 var WindowItem = require('./WindowItem.jsx');
+
+var _updateSelectedFiles = function (selectedFiles, clickedFile) {
+	var n = selectedFiles.slice();
+	var end = 0;
+	for (var i = 0; i < n.length; i++) {
+		if (n[i].id === clickedFile.id) {
+			n.splice(i, 1);
+			return n;
+		}
+	}
+	n.push(clickedFile);
+	return n;
+};
 
 var _updateBreadcrumbs = function (breadcrumbs, folder) {
 	var end = 0;
@@ -51,6 +114,7 @@ window.Navigator = React.createClass({
 
 	getInitialState: function () {
 		return {
+			selectedFiles: [],
 			breadcrumbs: [],
 			navigatorItems: [],
 			windowItems: []
@@ -100,13 +164,36 @@ window.Navigator = React.createClass({
 		API.uploadFiles(this.currentFolderId(), this.refs.filesForm);
 	},
 
-	fileClick: function (file) {
-		if (this._callbackSelectionDone && window.opener && window.opener[this._callbackSelectionDone]) {
-			window.opener[this._callbackSelectionDone](file);
+	isFileSelected: function (file) {
+		for (var i = 0; i < this.state.selectedFiles.length; i++) {
+			if (this.state.selectedFiles[i].id == file.id) return true;
+		}
+		return false;
+	},
+	toggleSelectedFile: function (file) {
+		this.setState({
+			selectedFiles: _updateSelectedFiles(this.state.selectedFiles, file)
+		});
+		// if (this._callbackSelectionDone && window.opener && window.opener[this._callbackSelectionDone]) {
+		// 	window.opener[this._callbackSelectionDone](file);
+		// 	window.close();
+		// } else
+		// 	alert('File selected, but no callback associated');
+	},
+	confirmSelection: function () {
+		if (window.opener && this.props.callback && window.opener[this.props.callback]) {
+			window.opener[this.props.callback](this.state.selectedFiles);
 			window.close();
-		} else alert('File selected, but no callback associated');
+		} else alert('Selection confirmed, but no callback has been specified (contact Ilyes hehe)');
 	},
 	render: function () {
+		var files = this.state.selectedFiles.map(function (file) {
+			return React.createElement(
+				'div',
+				{ className: 'selected-file', onClick: this.toggleSelectedFile.bind(this, file) },
+				React.createElement('img', { src: MEDIA_DIR + file.full_path + '?height=100' })
+			);
+		}.bind(this));
 		var breadcrumbs = this.state.breadcrumbs.map(function (crumb) {
 			return React.createElement(
 				'p',
@@ -129,6 +216,12 @@ window.Navigator = React.createClass({
 				React.createElement(
 					'div',
 					{ id: 'windowToolbar' },
+					files,
+					React.createElement(
+						'button',
+						{ onClick: this.confirmSelection },
+						'Confirmer la sélection'
+					),
 					React.createElement(
 						'div',
 						{ className: 'button', onClick: this.createFolder },
@@ -149,14 +242,14 @@ window.Navigator = React.createClass({
 				React.createElement(
 					'div',
 					{ id: 'windowContent' },
-					React.createElement(ItemList, { item: WindowItem, data: this.state.windowItems, pass: { folderClick: this.loadFolder, fileClick: this.fileClick } })
+					React.createElement(ItemList, { item: WindowItem, data: this.state.windowItems, pass: { folderClick: this.loadFolder, fileClick: this.toggleSelectedFile, isSelected: this.isFileSelected } })
 				)
 			)
 		);
 	}
 });
 
-},{"./ItemList.jsx":1,"./NavigatorItem.jsx":3,"./WindowItem.jsx":4}],3:[function(require,module,exports){
+},{"./ItemList.jsx":2,"./NavigatorItem.jsx":4,"./WindowItem.jsx":5}],4:[function(require,module,exports){
 
 var NavigatorItem = React.createClass({
 	displayName: "NavigatorItem",
@@ -172,52 +265,31 @@ var NavigatorItem = React.createClass({
 
 module.exports = NavigatorItem;
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
+
+var classNames = require('classnames');
 
 var WindowItem = React.createClass({
-	displayName: "WindowItem",
-
-	getInitialState() {
-		return {
-			editing: false
-		};
-	},
-
-	editTitle() {
-		this.setState({
-			editing: true
-		});
-	},
-	onKeyDown(e) {
-		if (e.keyCode == 13) this.setState({
-			editing: false
-		});
-	},
+	displayName: 'WindowItem',
 
 	click() {
 		if (this.props.data.type == 'folder') this.props.folderClick(this.props.data.id);else this.props.fileClick(this.props.data);
 	},
 
 	render() {
-		var title = this.state.editing ? React.createElement("input", { type: "text", autoFocus: true, onKeyDown: this.onKeyDown, ref: function (input) {
-				if (input) {
-					input.setSelectionRange(input.value.length, input.value.length);
-				}
-			}, value: this.props.data.title }) : React.createElement(
-			"p",
-			{ className: "title", onClick: this.editTitle },
-			this.props.data.title
-		);
-
 		return React.createElement(
-			"div",
-			{ className: "windowItem" },
-			React.createElement("div", { className: "icon", onClick: this.click }),
-			title
+			'div',
+			{ className: classNames('windowItem', { 'selected': this.props.isSelected(this.props.data) }) },
+			React.createElement('div', { className: 'icon', onClick: this.click }),
+			React.createElement(
+				'p',
+				{ className: 'title' },
+				this.props.data.title
+			)
 		);
 	}
 });
 
 module.exports = WindowItem;
 
-},{}]},{},[2]);
+},{"classnames":1}]},{},[3]);
