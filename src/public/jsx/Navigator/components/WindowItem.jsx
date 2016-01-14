@@ -1,13 +1,15 @@
 
+var ActionsCreator = require('../actions/ActionsCreator');
+
 var classNames = require('classnames');
 
 var WindowItem = React.createClass({
 
 	click() {
 		if (this.props.data.type == 'folder')
-			this.props.folderClick(this.props.data.id);
+			ActionsCreator.navigateToFolder(this.props.data.id);
 		else
-			this.props.fileClick(this.props.data);
+			ActionsCreator.clickedFile(this.props.data);
 	},
 
 	render() {

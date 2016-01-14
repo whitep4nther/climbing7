@@ -1,4 +1,10 @@
 
+var Dispatcher = require('../Dispatcher'),
+
+	DispatcherSubscriberMixin = require('../mixins/EventsSubscriberMixin')(Dispatcher),
+	ActionsTypes = require('../actions'),
+	ActionsCreator = require('../actions/ActionsCreator');
+
 var ItemList = require('./ItemList.jsx');
 var NavigatorItem = require('./NavigatorItem.jsx');
 var WindowItem = require('./WindowItem.jsx');
@@ -30,6 +36,7 @@ var _updateBreadcrumbs = function (breadcrumbs, folder) {
 };
 
 window.Navigator = React.createClass({
+	mixins: [DispatcherSubscriberMixin],
 
 	_callbackSelectionDone: null,
 
@@ -43,6 +50,15 @@ window.Navigator = React.createClass({
 	},
 
 	componentDidMount: function () {
+		this.subscribeToEvent(ActionsTypes.NAVIGATE_TO_FOLDER, function (folder) {
+			this.setState({
+				breadcrumbs: _updateBreadcrumbs(this.state.breadcrumbs, folder.folder),
+				windowItems: folder.content
+			});
+		}.bind(this));
+
+		this.subscribeToEvent(ActionsTypes.CLICKED_FILE, this.toggleSelectedFile);
+
 		var queryParams = getQueryParams();
 
 		if (queryParams['callback'])
@@ -56,7 +72,8 @@ window.Navigator = React.createClass({
 			});
 		}.bind(this));
 
-		this.loadFolder(27);
+		ActionsCreator.navigateToFolder(27);
+		// this.loadFolder({id: 27});
 	},
 
 	currentFolder: function () {
@@ -67,16 +84,6 @@ window.Navigator = React.createClass({
 		return folder ? folder.id : 0;
 	},
 
-	loadFolder: function (folderId) {
-		API
-		.getFolderContents(folderId)
-		.then(function (json) {
-			this.setState({
-				breadcrumbs: _updateBreadcrumbs(this.state.breadcrumbs, json.folder),
-				windowItems: json.content
-			});
-		}.bind(this));
-	},
 	createFolder: function () {
 		var id = this.state.breadcrumbs.length > 0 ? this.currentFolder().id : 0;
 
@@ -127,7 +134,7 @@ window.Navigator = React.createClass({
 		}.bind(this));
 		var breadcrumbs = this.state.breadcrumbs.map(function (crumb) {
 			return (
-				<p className="breadcrumb" onClick={this.loadFolder.bind(this, crumb.id)}>{crumb.title}</p>
+				<p className="breadcrumb" onClick={ ActionsCreator.navigateToFolder.bind(ActionsCreator, crumb.id) }>{crumb.title}</p>
 			);
 		}.bind(this));
 
@@ -155,7 +162,7 @@ window.Navigator = React.createClass({
 					</div>
 
 					<div id="windowContent">
-						<ItemList item={WindowItem}  data={this.state.windowItems} pass={{folderClick: this.loadFolder, fileClick: this.toggleSelectedFile, isSelected: this.isFileSelected}}/>
+						<ItemList item={WindowItem}  data={this.state.windowItems} pass={{isSelected: this.isFileSelected}}/>
 					</div>
 				</div>
 			</div>

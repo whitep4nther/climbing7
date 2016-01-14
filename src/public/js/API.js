@@ -4,6 +4,14 @@ API._makeRequest = function (url) {
 	return $.getJSON(ROOT + url);
 };
 
+API.createMediasPostRelationship = function (postId, files, identifier) {
+	return $.post(ROOT + '/admin/media/attach/'+postId, {medias: files.map(function (file) { return file.id; }), identifier: identifier});
+};
+
+API.detachMediaFromPost = function (postId, relationshipId) {
+	return $.post(ROOT + '/admin/media/detach/'+postId, {relationshipId: relationshipId});
+};
+
 API.updatePostFields = function (postId, fields) {
 	return $.post(ROOT + '/admin/post/change/'+postId, fields);
 };

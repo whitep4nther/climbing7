@@ -23,7 +23,8 @@ window.PostSingleImageChanger = React.createClass({
 
 		openLibrary(this.cbName);
 	},
-	libraryCallback: function (file) {
+	libraryCallback: function (files) {
+		var file = files[0];
 		var fields = {};
 		fields[this.props.field] = file.id;
 
@@ -48,7 +49,7 @@ window.PostSingleImageChanger = React.createClass({
 		 	if (this.state.editing)
 		 		style.opacity = 0.6;
 
-		 	image = <img src={LIBRARY_DIR + this.state.image.full_path} style={style}/>;
+		 	image = <img src={MEDIA_DIR + this.state.image.full_path + '?height=150'} style={style}/>;
 
 		 } else
 		 	image = 'Pas d\'image';

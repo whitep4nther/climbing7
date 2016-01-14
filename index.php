@@ -79,6 +79,11 @@ $app->group('/admin', function () {
 	$this->post('/post/{id:\d+}', CallControllerMethod('PostsController', 'admin_postEdited'))->setName('admin_postEdited');
 
 	$this->post('/post/change/{id:\d+}', CallControllerMethod('PostsController', 'admin_postChangeFields'))->setName('admin_postChangeField');
+
+
+
+	$this->post('/media/attach/{id:\d+}', CallControllerMethod('MediasToPostsController', 'admin_attachMediasToPost'))->setName('admin_attachMediasToPost');
+	$this->post('/media/detach/{id:\d+}', CallControllerMethod('MediasToPostsController', 'admin_detachMediaFromPost'))->setName('admin_detachMediaFromPost');
 });
 
 /** LIBRARY ***/

@@ -1,0 +1,5 @@
+
+module.exports = {
+	NAVIGATE_TO_FOLDER: 'NAVIGATE_TO_FOLDER',
+	CLICKED_FILE: 'CLICKED_FILE'
+};

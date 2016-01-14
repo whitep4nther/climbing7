@@ -278,12 +278,11 @@
 <!--HEADER-->
 <header style="background-image:url('{{ asset('/img/banniereTrekking.jpg') }}');height:400px;width:100%;margin-bottom:40px;">
 	<section style="width:1000px;margin:auto;color:white;font-size:30px;">
-		<img src="<?= asset('img/Climbing7.png') ?>" style="width:250px;margin-top:275px;margin-left:200px;"/>
+		<img src="{{ asset('/img/Climbing7.png') }}" style="width:250px;margin-top:275px;margin-left:200px;"/>
 	</section>
 </header>
 <!--MAIN-->
 <section  style="width:1000px;margin:auto;">
-	<p id="flashMessage"><?= $flash['success'] ?></p>
 
 	<img src="{{ asset('/img/canyoning.jpg') }}" style="display:bloc; width:175px;height:175px;border:2px solid white;position:absolute;z-index:10;top:265px;"/>
 

@@ -6,7 +6,7 @@ namespace Controller;
 
 class MediasController extends \Core\Controller {
 
-	protected $models = ['Media'];
+	protected $models = ['Media', 'MediaToPost'];
 
 	public function uploadTo($folderId) {
 		// debug($folderId);

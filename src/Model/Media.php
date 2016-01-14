@@ -11,8 +11,7 @@ class Media extends \Core\Model {
 	public function mediasForPost($postId) {
 		$MediaToPost = new \Model\MediaToPost($this->queryB);
 
-		$mediasIds = $MediaToPost->q()->where('post_id', $postId)->fetchPairs('id', 'media_id');
-		return $this->q($mediasIds);
+		return $MediaToPost->q()->select(null)->select('medias_to_posts.id AS relationship_id')->where('post_id', $postId)->innerJoin('medias ON medias.id = medias_to_posts.media_id')->select('medias.*');
 	}
 
 	public function mediasForFolder($folderId) {

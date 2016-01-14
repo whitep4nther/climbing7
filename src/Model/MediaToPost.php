@@ -16,4 +16,8 @@ class MediaToPost extends \Core\Model {
 			'identifier' => $identifier
 		]);
 	}
+
+	public function destroyRelationship($id) {
+		return $this->queryB->deleteFrom($this->table, $id);
+	}
 }

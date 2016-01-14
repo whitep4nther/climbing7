@@ -41,7 +41,7 @@ td {padding-right:10px;}
 
 /* GALLERY EDITOR */
 .gallery-editor {}
-	.gallery-editor .images img.selected {opacity: 0.6;}
+	.gallery-editor .images img.pending, .gallery-editor .images img.deleting {opacity: 0.6;}
 
 /* FOOTER */
 footer {width:1000px;margin:auto;overflow:hidden;margin-top:0px;margin-bottom:10px;}

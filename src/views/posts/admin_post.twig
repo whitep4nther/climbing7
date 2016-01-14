@@ -8,6 +8,8 @@
 
 	<img src="{{ asset('/img/canyoning.jpg') }}" style="display:block; width:175px;height:175px;border:2px solid white;position:absolute;z-index:10;top:265px;"/>
 
+	<div id="coverImageChanger"></div>
+
 	<div id="galleryEditor"></div>
 
 	<a href="#" onclick="openLibrary('testFn');return false;">Open manager</a>
@@ -127,10 +129,11 @@
 	{{ js(['functions.js', 'API.js', 'postHelpersBundle.js']) }}
 
 	<script>
-	// ReactDOM.render(
-	// 	React.createElement(PostSingleImageChanger, {postId: {{ post.id }}, field: 'cover_id', image: {{ json_encode(cover)|raw }} }),
-	// 	document.getElementById('cover-imageChanger')
-	// );
+	ReactDOM.render(
+		React.createElement(PostSingleImageChanger, {postId: {{ post.id }}, field: 'cover_id', image: {{ json_encode(cover)|raw }} }),
+		document.getElementById('coverImageChanger')
+	);
+
 	ReactDOM.render(
 		React.createElement(PostGalleryEditor, {postId: {{ post.id }}, images: {{ json_encode(gallery)|raw }} }),
 		document.getElementById('galleryEditor')
