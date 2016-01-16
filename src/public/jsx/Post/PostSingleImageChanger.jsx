@@ -49,7 +49,7 @@ window.PostSingleImageChanger = React.createClass({
 		 	if (this.state.editing)
 		 		style.opacity = 0.6;
 
-		 	image = <img src={MEDIA_DIR + this.state.image.full_path + '?height=150'} style={style}/>;
+		 	image = <img src={MEDIA_DIR + this.state.image.full_path + '?width=200'} style={style}/>;
 
 		 } else
 		 	image = 'Pas d\'image';
@@ -57,10 +57,12 @@ window.PostSingleImageChanger = React.createClass({
 		var message = this.state.message && !this.state.editing ? <p className="success-message">{this.state.message}</p> : false;
 
 		return (
-			<div id={'post-'+this.props.field+'-imageChanger'}>
-				{image}
-				{message}
-				<button onClick={this.openLibrary}>Changer</button>
+			<div id={'post-'+this.props.field+'-imageChanger'} className="single-image-changer">
+				<button onClick={this.openLibrary} className="pure-button pure-u-22-24">Changer</button>
+				<p className="pure-u-22-24">
+					{image}
+					{message}
+				</p>
 			</div>
 		);
 	}

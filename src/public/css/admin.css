@@ -1,0 +1,16 @@
+
+textarea {
+	height: 130px;
+}
+
+fieldset legend {font-size: 20px;}
+
+/* SINGLE IMAGE CHANGER */
+.single-image-changer {}
+	.single-image-changer button {margin-bottom: 20px;}
+	.single-image-changer p {text-align: center;}
+
+/* GALLERY EDITOR */
+.gallery-editor {}
+	.gallery-editor button {margin-bottom: 20px;}
+	.gallery-editor .images img.pending, .gallery-editor .images img.deleting {opacity: 0.6;}

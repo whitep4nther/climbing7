@@ -1,4 +1,6 @@
 
+var classNames = require('classnames');
+
 var Dispatcher = require('../Dispatcher'),
 
 	DispatcherSubscriberMixin = require('../mixins/EventsSubscriberMixin')(Dispatcher),
@@ -72,7 +74,9 @@ window.Navigator = React.createClass({
 			});
 		}.bind(this));
 
+		ActionsCreator.navigateToFolder(26);
 		ActionsCreator.navigateToFolder(27);
+
 		// this.loadFolder({id: 27});
 	},
 
@@ -128,13 +132,15 @@ window.Navigator = React.createClass({
 		var files = this.state.selectedFiles.map(function (file) {
 			return (
 				<div className="selected-file" onClick={this.toggleSelectedFile.bind(this, file)}>
-						<img src={MEDIA_DIR + file.full_path + '?height=100'}/>
+					<img src={MEDIA_DIR + file.full_path + '?width=230&height=200'}/>
 				</div>
 			);
 		}.bind(this));
-		var breadcrumbs = this.state.breadcrumbs.map(function (crumb) {
+		var breadcrumbs = this.state.breadcrumbs.map(function (crumb, i) {
 			return (
-				<p className="breadcrumb" onClick={ ActionsCreator.navigateToFolder.bind(ActionsCreator, crumb.id) }>{crumb.title}</p>
+				<p className={classNames("breadcrumb", {active: i + 1 == this.state.breadcrumbs.length})} onClick={ ActionsCreator.navigateToFolder.bind(ActionsCreator, crumb.id) }>{crumb.title}
+					<span className="separator">{i + 1 < this.state.breadcrumbs.length ? '>' : ''}</span>
+				</p>
 			);
 		}.bind(this));
 
@@ -144,10 +150,14 @@ window.Navigator = React.createClass({
 				<div id="leftPanel">
 					<ItemList item={NavigatorItem} data={this.state.navigatorItems} pass={{click: this.loadFolder}}/>
 				</div>
+				<div id="rightPanel">
+					<div id="selectedFiles">
+						{files}
+					</div>
+					<button id="confirmSelection" onClick={this.confirmSelection}>Confirmer la sélection</button>
+				</div>
 				<div id="window">
 					<div id="windowToolbar">
-						{files}
-						<button onClick={this.confirmSelection}>Confirmer la sélection</button>
 
 						<div className="button" onClick={this.createFolder}>Nouveau dossier</div>
 

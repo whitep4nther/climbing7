@@ -9,7 +9,8 @@ window.PostGalleryEditor = React.createClass({
 	    return {
 	        images: this.props.images,
 	        deleting: [],
-	        pending: [] 
+	        pending: [],
+	        justAdded: []
 	    };
 	},
 	componentDidMount() {
@@ -27,13 +28,14 @@ window.PostGalleryEditor = React.createClass({
 	libraryCallback: function (files) {
 		this.setState({
 			images: this.state.images.concat(files),
-			pending: files
+			pending: files,
+			justAdded: []
 		});
 
 		API
 			.createMediasPostRelationship(this.props.postId, files, 'gallery')
 			.then(function () {
-				this.setState({pending: []});
+				this.setState({pending: [], justAdded: files});
 			}.bind(this));
 
 		// this.setState({
@@ -72,7 +74,8 @@ window.PostGalleryEditor = React.createClass({
 						className={
 							classNames({
 								pending: this.state.pending.indexOf(image) != -1,
-								deleting: this.state.deleting.indexOf(image.relationship_id) != -1
+								deleting: this.state.deleting.indexOf(image.relationship_id) != -1,
+								'flash animated': this.state.justAdded.indexOf(image) != -1
 							})
 						}
 					/>;
@@ -81,10 +84,10 @@ window.PostGalleryEditor = React.createClass({
 
 		return (
 			<div id={'galleryPost'+this.props.postId} className="gallery-editor">
+				<button type="button" onClick={this.openLibrary} disabled={this.state.pending.length > 0} className="pure-button pure-u-1">Ajouter des images</button>
 				<div className="images">
 					{gallery}
 				</div>
-				<button type="button" onClick={this.openLibrary} disabled={this.state.pending.length > 0}>Ajouter des images</button>
 			</div>
 		);
 	}

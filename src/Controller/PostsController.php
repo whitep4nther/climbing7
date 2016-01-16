@@ -59,12 +59,14 @@ class PostsController extends \Core\Controller {
 	}
 
 	public function admin_postEdited($id) {
-		$this->admin_postChangeFields($id);
+		$data = $this->request->getParsedBody();
+		unset($data['action']);
+		$this->Post->queryB()->update($this->Post->table(), $data, $id)->execute();
 
 		return $this->redirectResponse('admin_post', ['id' => $id]);
 	}
 
 	public function admin_postChangeFields($id) {
-		$this->Post->queryB()->update($this->Post->table(), $this->app->request->getParsedBody(), $id)->execute();
+		$this->Post->queryB()->update($this->Post->table(), $this->request->getParsedBody(), $id)->execute();
 	}
 }

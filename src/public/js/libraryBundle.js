@@ -407,6 +407,8 @@ module.exports = ItemList;
 
 },{}],7:[function(require,module,exports){
 
+var classNames = require('classnames');
+
 var Dispatcher = require('../Dispatcher'),
     DispatcherSubscriberMixin = require('../mixins/EventsSubscriberMixin')(Dispatcher),
     ActionsTypes = require('../actions'),
@@ -478,7 +480,9 @@ window.Navigator = React.createClass({
 			});
 		}.bind(this));
 
+		ActionsCreator.navigateToFolder(26);
 		ActionsCreator.navigateToFolder(27);
+
 		// this.loadFolder({id: 27});
 	},
 
@@ -530,14 +534,19 @@ window.Navigator = React.createClass({
 			return React.createElement(
 				'div',
 				{ className: 'selected-file', onClick: this.toggleSelectedFile.bind(this, file) },
-				React.createElement('img', { src: MEDIA_DIR + file.full_path + '?height=100' })
+				React.createElement('img', { src: MEDIA_DIR + file.full_path + '?width=230&height=200' })
 			);
 		}.bind(this));
-		var breadcrumbs = this.state.breadcrumbs.map(function (crumb) {
+		var breadcrumbs = this.state.breadcrumbs.map(function (crumb, i) {
 			return React.createElement(
 				'p',
-				{ className: 'breadcrumb', onClick: ActionsCreator.navigateToFolder.bind(ActionsCreator, crumb.id) },
-				crumb.title
+				{ className: classNames("breadcrumb", { active: i + 1 == this.state.breadcrumbs.length }), onClick: ActionsCreator.navigateToFolder.bind(ActionsCreator, crumb.id) },
+				crumb.title,
+				React.createElement(
+					'span',
+					{ className: 'separator' },
+					i + 1 < this.state.breadcrumbs.length ? '>' : ''
+				)
 			);
 		}.bind(this));
 
@@ -551,16 +560,24 @@ window.Navigator = React.createClass({
 			),
 			React.createElement(
 				'div',
+				{ id: 'rightPanel' },
+				React.createElement(
+					'div',
+					{ id: 'selectedFiles' },
+					files
+				),
+				React.createElement(
+					'button',
+					{ id: 'confirmSelection', onClick: this.confirmSelection },
+					'Confirmer la sélection'
+				)
+			),
+			React.createElement(
+				'div',
 				{ id: 'window' },
 				React.createElement(
 					'div',
 					{ id: 'windowToolbar' },
-					files,
-					React.createElement(
-						'button',
-						{ onClick: this.confirmSelection },
-						'Confirmer la sélection'
-					),
 					React.createElement(
 						'div',
 						{ className: 'button', onClick: this.createFolder },
@@ -588,7 +605,7 @@ window.Navigator = React.createClass({
 	}
 });
 
-},{"../Dispatcher":3,"../actions":5,"../actions/ActionsCreator":4,"../mixins/EventsSubscriberMixin":10,"./ItemList.jsx":6,"./NavigatorItem.jsx":8,"./WindowItem.jsx":9}],8:[function(require,module,exports){
+},{"../Dispatcher":3,"../actions":5,"../actions/ActionsCreator":4,"../mixins/EventsSubscriberMixin":10,"./ItemList.jsx":6,"./NavigatorItem.jsx":8,"./WindowItem.jsx":9,"classnames":2}],8:[function(require,module,exports){
 
 var ActionsCreator = require('../actions/ActionsCreator');
 
@@ -622,8 +639,17 @@ var WindowItem = React.createClass({
 	render() {
 		return React.createElement(
 			'div',
-			{ className: classNames('windowItem', { 'selected': this.props.isSelected(this.props.data) }) },
-			React.createElement('div', { className: 'icon', onClick: this.click }),
+			{ className: classNames('windowItem', { 'selected': this.props.isSelected(this.props.data) }), title: this.props.data.title },
+			React.createElement(
+				'div',
+				{ className: 'icon', onClick: this.click },
+				React.createElement('img', { src: MEDIA_DIR + this.props.data.full_path + '?height=100' }),
+				React.createElement(
+					'p',
+					{ className: 'selected-message' },
+					'✓'
+				)
+			),
 			React.createElement(
 				'p',
 				{ className: 'title' },

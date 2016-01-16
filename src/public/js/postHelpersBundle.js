@@ -61,7 +61,8 @@ window.PostGalleryEditor = React.createClass({
 		return {
 			images: this.props.images,
 			deleting: [],
-			pending: []
+			pending: [],
+			justAdded: []
 		};
 	},
 	componentDidMount() {
@@ -78,11 +79,12 @@ window.PostGalleryEditor = React.createClass({
 	libraryCallback: function (files) {
 		this.setState({
 			images: this.state.images.concat(files),
-			pending: files
+			pending: files,
+			justAdded: []
 		});
 
 		API.createMediasPostRelationship(this.props.postId, files, 'gallery').then(function () {
-			this.setState({ pending: [] });
+			this.setState({ pending: [], justAdded: files });
 		}.bind(this));
 
 		// this.setState({
@@ -124,7 +126,8 @@ window.PostGalleryEditor = React.createClass({
 				onClick: this.removeImage.bind(this, image),
 				className: classNames({
 					pending: this.state.pending.indexOf(image) != -1,
-					deleting: this.state.deleting.indexOf(image.relationship_id) != -1
+					deleting: this.state.deleting.indexOf(image.relationship_id) != -1,
+					'flash animated': this.state.justAdded.indexOf(image) != -1
 				})
 			});
 		}.bind(this));
@@ -133,14 +136,14 @@ window.PostGalleryEditor = React.createClass({
 			'div',
 			{ id: 'galleryPost' + this.props.postId, className: 'gallery-editor' },
 			React.createElement(
+				'button',
+				{ type: 'button', onClick: this.openLibrary, disabled: this.state.pending.length > 0, className: 'pure-button pure-u-1' },
+				'Ajouter des images'
+			),
+			React.createElement(
 				'div',
 				{ className: 'images' },
 				gallery
-			),
-			React.createElement(
-				'button',
-				{ type: 'button', onClick: this.openLibrary, disabled: this.state.pending.length > 0 },
-				'Ajouter des images'
 			)
 		);
 	}
@@ -195,7 +198,7 @@ window.PostSingleImageChanger = React.createClass({
 
 			if (this.state.editing) style.opacity = 0.6;
 
-			image = React.createElement('img', { src: MEDIA_DIR + this.state.image.full_path + '?height=150', style: style });
+			image = React.createElement('img', { src: MEDIA_DIR + this.state.image.full_path + '?width=200', style: style });
 		} else image = 'Pas d\'image';
 
 		var message = this.state.message && !this.state.editing ? React.createElement(
@@ -206,13 +209,17 @@ window.PostSingleImageChanger = React.createClass({
 
 		return React.createElement(
 			'div',
-			{ id: 'post-' + this.props.field + '-imageChanger' },
-			image,
-			message,
+			{ id: 'post-' + this.props.field + '-imageChanger', className: 'single-image-changer' },
 			React.createElement(
 				'button',
-				{ onClick: this.openLibrary },
+				{ onClick: this.openLibrary, className: 'pure-button pure-u-22-24' },
 				'Changer'
+			),
+			React.createElement(
+				'p',
+				{ className: 'pure-u-22-24' },
+				image,
+				message
 			)
 		);
 	}

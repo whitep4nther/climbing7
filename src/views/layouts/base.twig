@@ -17,10 +17,11 @@
   	<!-- CSS -->
   	{% block css %}
   		{# Climbin7 css #}
-  		{{ css(['topos.css', 'main.css', 'index.css']) }}
+  		{{ css(['animate.custom.css', 'topos.css', 'main.css', 'index.css', 'admin.css']) }}
   		
   		{# Others #}
   		{{ css(['justifiedGallery.css']) }}
+  		<link href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css" rel="stylesheet" type="text/css"/>
 	{% endblock %}
 
 	<!-- <link href="css/swipebox.css" rel="stylesheet" type="text/css"/> 
@@ -282,7 +283,7 @@
 	</section>
 </header>
 <!--MAIN-->
-<section  style="width:1000px;margin:auto;">
+<section  style="width:1000px;margin:auto;overflow:auto;">
 
 	<img src="{{ asset('/img/canyoning.jpg') }}" style="display:bloc; width:175px;height:175px;border:2px solid white;position:absolute;z-index:10;top:265px;"/>
 
@@ -345,7 +346,8 @@
 
 	{% block scripts %}
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-		{{ js(['jquery.justifiedGallery.js']) }}
+		{{ js(['jquery.justifiedGallery.js', 'autosize.min.js']) }}
+		<script type="text/javascript">autosize(document.querySelectorAll('textarea'));</script>
 	{% endblock %}	
 </body>
 </html>

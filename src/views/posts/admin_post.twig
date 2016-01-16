@@ -5,120 +5,103 @@
 	Content 
 #}
 {% block content %}
-
 	<img src="{{ asset('/img/canyoning.jpg') }}" style="display:block; width:175px;height:175px;border:2px solid white;position:absolute;z-index:10;top:265px;"/>
 
-	<div id="coverImageChanger"></div>
+	<p class="back margin-top-20"><a href="{{ postUrl(post) }}">< {{ post.title }}</a></p>
 
-	<div id="galleryEditor"></div>
+	<form method="POST" action="{{ path_for('admin_postEdited', {'id': post.id}) }}" class="pure-form pure-form-stacked margin-top-20">
+		<fieldset>
+			<legend>Édition du post <strong>{{ post.title }}</strong></legend>
+			<div class="pure-g">
+				<div class="pure-u-1">
+					<label for="title">Titre</label>
+					<input id="title" type="text" name="title" value="{{ post.title }}" class="pure-u-1"/>
+				</div>
 
-	<a href="#" onclick="openLibrary('testFn');return false;">Open manager</a>
+				<div class="pure-u-1">
+					<label for="rate">Note /5</label>
+					<select id="rate" name="rate">
 
-	<form method="POST" action="{{ path_for('admin_postEdited', {'id': post.id}) }}">
+						{% set text = '' %}
+						{% for i in 1..5 %}
 
-		<div class="form-group">
-			<label for="title">Titre</label>
-			<input id="title" type="text" name="title" value="{{ post.title }}"/>
-		</div>
+							{% set text = text ~ '★' %}
+							<option {{ i == post.rate ? 'selected="selected"' }} value="{{ i }}">{{ text }}</option>
 
-		<div class="form-group">
-			<label for="label">Label (~ 255 caractères)</label>
-			<textarea id="label" name="label">
-				{{ post.label }}
-			</textarea>
-		</div>
+						{% endfor %}
 
-		<div class="form-group">
-			<label for="category">Catégorie</label>
-			<select id="category" name="category_id">
+					</select>
+				</div>
 
-				{% for category in categories %}
-					<option {{ post.category_id == category.id ? 'selected="selected"' }} value="{{ category.id }}">{{ category.name }}</option>
-				{% endfor %}
+				<div class="pure-u-1-4">
+					<label for="label">Label (~ 255 caractères)</label>
+					<textarea id="label" name="label" class="pure-u-22-24">{{ post.label }}</textarea>
+				</div>
 
-			</select>
-		</div>
+				<div class="pure-u-3-4">
+					<label for="presentation-textarea">Présentation</label>
+					<textarea id="presentation-textarea" name="presentation" class="pure-u-1" style="height: 200px;">{{ post.presentation }}</textarea>
+				</div>
+				
+				<div class="pure-u-1-4">
+					<label for="category">Catégorie</label>
+					<select id="category" name="category_id">
 
-		<div class="form-group">
-			<label for="country">Pays</label>
-			<input id="country" type="text" name="country" value="{{ post.country }}"/>
-		</div>
+						{% for category in categories %}
+							<option {{ post.category_id == category.id ? 'selected="selected"' }} value="{{ category.id }}">{{ category.name }}</option>
+						{% endfor %}
 
-		<div class="form-group">
-			<label for="region">Région</label>
-			<input id="region" type="text" name="region" value="{{ post.region }}"/>
-		</div>
+					</select>
 
-		<div class="form-group">
-			<label for="site">Site</label>
-			<input id="site" type="text" name="site" value="{{ post.site }}"/>
-		</div>
+					<label for="country">Pays</label>
+					<input id="country" type="text" name="country" value="{{ post.country }}" class="pure-u-22-24"/>
 
-		<div class="form-group">
-			<label for="rate">Note /5</label>
-			<select id="rate" name="rate">
+					<label for="region">Région</label>
+					<input id="region" type="text" name="region" value="{{ post.region }}" class="pure-u-22-24"/>
 
-				{% set text = '' %}
-				{% for i in 1..5 %}
+					<label for="site">Site</label>
+					<input id="site" type="text" name="site" value="{{ post.site }}" class="pure-u-22-24"/>
 
-					{% set text = text ~ '★' %}
-					<option {{ i == post.rate ? 'selected="selected"' }} value="{{ i }}">{{ text }}</option>
+					<label for="date">Date</label>
+					<input type="date" id="date" name="date" value="{{ post.date }}"/>
+				</div>
 
-				{% endfor %}
+				<div class="pure-u-3-4">
 
-			</select>
-		</div>
+					<label for="characteristics-textarea">Caractéristiques</label>
+					<textarea id="characteristics-textarea" name="characteristics" class="pure-u-1">{{ post.characteristics }}</textarea>
 
-		<div class="form-group">
-			<label for="presentation">Présentation</label>
-			<textarea id="presentation" name="presentation">
-				{{ post.presentation }}
-			</textarea>
-		</div>
+					<label for="access-textarea">Accès</label>
+					<textarea id="access-textarea" name="access" class="pure-u-1">{{ post.access }}</textarea>
 
-		<div class="form-group">
-			<label for="characteristics">Caractéristiques</label>
-			<textarea id="characteristics" name="characteristics">
-				{{ post.characteristics }}
-			</textarea>
-		</div>
+					<label for="approach-textarea">Approche</label>
+					<textarea id="approach-textarea" name="approach" class="pure-u-1">{{ post.approach }}</textarea>
 
-		<div class="form-group">
-			<label for="access">Accès</label>
-			<textarea id="access" name="access">
-				{{ post.access }}
-			</textarea>
-		</div>
+					<label for="parcours-textarea">Parcours</label>
+					<textarea id="parcours-textarea" name="parcours" class="pure-u-1">{{ post.parcours }}</textarea>
 
-		<div class="form-group">
-			<label for="approach">Approche</label>
-			<textarea id="approach" name="approach">
-				{{ post.approach }}
-			</textarea>
-		</div>
+					<label for="back">Retour</label>
+					<textarea id="back" name="back" class="pure-u-1">{{ post.back }}</textarea>
+				</div>
 
-		<div class="form-group">
-			<label for="parcours">Parcours</label>
-			<textarea id="parcours" name="parcours">
-				{{ post.parcours }}
-			</textarea>
-		</div>
-
-		<div class="form-group">
-			<label for="back">Retour</label>
-			<textarea id="back" name="back">
-				{{ post.back }}
-			</textarea>
-		</div>
-
-		<div class="form-group">
-			<label for="date">Date</label>
-			<input type="date" id="date" name="date" value="{{ post.date }}"/>
-		</div>
-
-		<input type="submit" value="Éditer"/>
-
+				<input type="submit" name="action" value="Éditer" class="pure-button pure-u-3-4"/>
+				<div class="pure-u-1-4">
+					<input type="submit" name="action" value="Éditer et rester sur cette page" class="pure-button pure-u-22-24" style="float: right;"/>
+				</div>
+			</div>
+		</fieldset>
 	</form>
+
+	<div class="pure-form">
+		<fieldset class="margin-top-30">
+				<legend>Galerie</legend>
+				<div class="pure-g">
+					<div id="coverImageChanger" class="pure-u-1-4"></div>
+
+					<div id="galleryEditor" class="pure-u-3-4"></div>
+				</div>
+		</fieldset>
+	</div>
 {% endblock %}
 
 {% block scripts %}

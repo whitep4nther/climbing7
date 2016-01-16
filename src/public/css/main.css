@@ -12,6 +12,18 @@ body {padding:0;margin:0;width:100%;background-image:url('../images/bg.png');fon
 .etiquette {display:inline;font-family:oswaldlight;font-size:16px;letter-spacing:0.5px;border:1px solid #8c6239;border-radius:2px;}
 .top:hover {background-color:#eee;}
 
+.margin-top-10 {margin-top:10px !important;}
+.margin-top-15 {margin-top:15px !important;}
+.margin-top-20 {margin-top:20px !important;}
+.margin-top-25 {margin-top:25px !important;}
+.margin-top-30 {margin-top:30px !important;}
+
+.margin-bottom-10 {margin-bottom:10px !important;}
+.margin-bottom-15 {margin-bottom:15px !important;}
+.margin-bottom-20 {margin-bottom:20px !important;}
+.margin-bottom-25 {margin-bottom:25px !important;}
+.margin-bottom-30 {margin-bottom:30px !important;}
+
 /*TOP PAGE*/
 #topPage {width:1000px;margin:auto;}
 #topMenu {text-align:center;list-style-type: none; padding:0;background-image:url('../images/white90.png');border-radius:0 0 4px 4px;margin:auto;}
@@ -38,10 +50,6 @@ td {padding-right:10px;}
 .search {border-bottom:1px solid #ccc;overflow:hidden;padding:10px 20px;}		
 .search:hover {background-color:#efefef;cursor:pointer;}
 
-
-/* GALLERY EDITOR */
-.gallery-editor {}
-	.gallery-editor .images img.pending, .gallery-editor .images img.deleting {opacity: 0.6;}
 
 /* FOOTER */
 footer {width:1000px;margin:auto;overflow:hidden;margin-top:0px;margin-bottom:10px;}

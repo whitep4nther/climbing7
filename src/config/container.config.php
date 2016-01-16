@@ -22,7 +22,13 @@ return [
 		return new \PDO("mysql:dbname=climbing7;host=localhost;", "root", "123456");
 	},
 	'fPDO' => function ($c) {
-		return new \FluentPDO($c['PDO']);
+		$fdpo = new \FluentPDO($c['PDO']);
+		// $fdpo->debug = function ($query) {
+		// 	debug($query->getQuery());
+		// 	debug($query->getParameters());
+		// 	// exit();
+		// };
+		return $fdpo;
 	},
 	/**
 	* Twig
