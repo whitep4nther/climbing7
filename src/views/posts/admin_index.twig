@@ -1,0 +1,20 @@
+
+{% extends 'layouts/base.twig' %}
+
+{###########
+	Content 
+#}
+{% block content %}
+
+	<table class="pure-table pure-table-horizontal">
+		<tbody>
+			{% for post in posts %}
+				<tr>
+					<td><img src="{{ media(covers[post['cover_id']].full_path) }}?width=100&height=50"/></td>
+					<td>{{ post.title }}</td>
+					<td><a href="{{ path_for('admin_post', {'id': post.id}) }}">Éditer</a></td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}

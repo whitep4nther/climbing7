@@ -1,4 +1,4 @@
 node_modules/
 vendor/
 **/*/.cache
-**/*/.cache
+src/public/library/
