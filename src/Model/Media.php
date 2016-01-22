@@ -40,20 +40,22 @@ class Media extends \Core\Model {
 		}
 	}
 
-	public function downloadFilesToFolder($urls, $folderId) {
+	public function downloadFilesToFolder($imgs, $folderId) {
+		$imgs = $imgs->extract(['src', 'data-image-title']);
 		$ids = [];
 
-		foreach ($urls as $url) {
-			if ($id = $this->downloadFileToFolder($url, $folderId)) {
+		foreach ($imgs as $img) {
+			if ($id = $this->downloadFileToFolder($img, $folderId)) {
 				$ids[] = $id;
 			}
 		}
 		return $ids;
 	}
 
-	public function downloadFileToFolder($url, $folderId) {
+	public function downloadFileToFolder($img, $folderId) {
 		$MediaFolder = new \Model\MediaFolder($this->queryB);
 		$folder = $MediaFolder->queryB->from($MediaFolder->table, $folderId)->fetch();
+		$url = strtok($img[0], '?');
 
 		$infos = pathinfo(parse_url($url)['path']);
 		$slug = \Cake\Utility\Inflector::slug($infos['filename']);
@@ -64,7 +66,8 @@ class Media extends \Core\Model {
 					'title' => $infos['filename'],
 					'folder_id' => $folderId,
 					'filename' => $slug. '.' .$infos['extension'],
-					'full_path' => $folder['path'] .'/'.$slug.'.'.$infos['extension']
+					'full_path' => $folder['path'] .'/'.$slug.'.'.$infos['extension'],
+					'description' => $img[1]
 				])->execute();
 		}
 	}

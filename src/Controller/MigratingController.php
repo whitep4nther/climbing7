@@ -10,18 +10,32 @@ class MigratingController extends \Core\Controller {
 
 	protected $models = ['Post', 'MediaFolder', 'Media', 'MediaToPost'];
 
-	public function importWordpressPage() {
+	public function listUrls() {
+		set_time_limit(0);
+		$crawler = new \Symfony\Component\DomCrawler\Crawler();
+		$crawler->addContent(file_get_contents(__DIR__ . '/hihi.html'));
+
+		$urls = $crawler->filter('div.post h2 a')->extract('href');
+
+		array_shift($urls);
+		foreach ($urls as $url) {
+			$this->importWordpressPage($url);
+		}
+		// debug($urls);
+	}
+
+	public function importWordpressPage($url) {
 		$category = 'Canyoning';
 		$categoryId = 3;
 
 		$crawler = new \Symfony\Component\DomCrawler\Crawler();
-		$crawler->addContent(file_get_contents(__DIR__ . '/hihi.html'));
+		$crawler->addContent(file_get_contents($url));
 
 		$title = $crawler->filter('#single .entry-title')->text();
 
 		$post = [];
 
-		$post['rate'] = substr_count(strstr($title[2], '✯'), '✯');
+		$post['rate'] = substr_count(strstr($title, '✯'), '✯');
 		$post['category_id'] = $categoryId;
 
 		$post['title'] = $title;
@@ -65,18 +79,13 @@ class MigratingController extends \Core\Controller {
 		$folder = $this->MediaFolder->q()->where(['title' => $title, 'parent_id' => $lastId])->fetch();
 		$lastId = (!$folder) ? $this->MediaFolder->create($lastId, $title)->execute() : $folder['id'];
 
-		$urls = array_map(function ($v) {
-			return strtok($v, '?');
-		}, $imgs->extract(['src']));
-		$ids = $this->Media->downloadFilesToFolder($urls, $lastId);
+		$ids = $this->Media->downloadFilesToFolder($imgs, $lastId);
 
 		$postId = $this->Post->queryB()->insertInto($this->Post->table(), $post)->execute();
 
 		foreach ($ids as $mediaId) {
 			$this->MediaToPost->createRelationship($mediaId, $postId, 'gallery')->execute();
 		}
-
-		debug($post);
 	}
 
 }

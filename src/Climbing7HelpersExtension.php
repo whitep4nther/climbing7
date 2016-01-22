@@ -20,6 +20,7 @@ class Climbing7HelpersExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
+            new \Twig_SimpleFunction('media', array($this, 'media')),
             new \Twig_SimpleFunction('library', array($this, 'library')),
             new \Twig_SimpleFunction('asset', array($this, 'asset')),
             new \Twig_SimpleFunction('css', array($this, 'css'), ['is_safe' => ['html']]),
@@ -67,6 +68,10 @@ class Climbing7HelpersExtension extends \Twig_Extension
 
     public function library($path) {
         return $this->asset('/library'.$path);
+    }
+
+    public function media($path) {
+        return $this->uri->getBasePath() . '/media'.$path;
     }
 
     public function asset($path) {

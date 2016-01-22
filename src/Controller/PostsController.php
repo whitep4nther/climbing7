@@ -43,6 +43,18 @@ class PostsController extends \Core\Controller {
 	/*** 
 	* ADMIN 
 	***/
+	public function admin_index() {
+		$posts = $this->Post->q()->fetchAll();
+		$categories = $this->Category->q()->fetchAll('id');
+		$covers = $this->Media->q()->where('id', Hash::extract($posts, '{n}.cover_id'))->fetchAll('id');
+
+		$this->render('posts/admin_index.twig', [
+			'posts' => $posts,
+			'categories' => $categories,
+			'covers' => $covers
+		]);
+	}
+
 	public function admin_post($id) {
 		$post = $this->Post->q()->where('id', $id)->fetch();
 		$categories = $this->Category->q()->fetchAll();
@@ -63,7 +75,7 @@ class PostsController extends \Core\Controller {
 		unset($data['action']);
 		$this->Post->queryB()->update($this->Post->table(), $data, $id)->execute();
 
-		return $this->redirectResponse('admin_post', ['id' => $id]);
+		return $this->redirectResponse('post', ['id' => $id, 'title' => Inflector::slug($data['title'], '-')]);
 	}
 
 	public function admin_postChangeFields($id) {

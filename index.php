@@ -67,13 +67,14 @@ $app->get('/', CallControllerMethod('PostsController', 'index'));
 
 $app->get('/post/{id:\d+}/{title}', CallControllerMethod('PostsController', 'post'))->setName('post');
 
-$app->get('/migrate', function ($request, $response, $args) {
-	$ctrl = new \Controller\MigratingController($this);
-	$ctrl->importWordpressPage();
-});
+$app->get('/migrate', CallControllerMethod('MigratingController', 'importWordpressPage'));
+
+$app->get('/migrating-urls', CallControllerMethod('MigratingController', 'listUrls'));
 
 /** ADMIN ***/
 $app->group('/admin', function () {
+
+	$this->get('/posts', CallControllerMethod('PostsController', 'admin_index'))->setName('admin_postsIndex');
 
 	$this->get('/post/{id:\d+}', CallControllerMethod('PostsController', 'admin_post'))->setName('admin_post');
 	$this->post('/post/{id:\d+}', CallControllerMethod('PostsController', 'admin_postEdited'))->setName('admin_postEdited');
